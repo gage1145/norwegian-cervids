@@ -55,9 +55,6 @@ df_clean <- df_metrics %>%
     animal_id = str_match(Animal, "\\d+$"),
     species = str_match(Animal, "^[[:alpha:]]+")
   ) %>%
-  filter(
-    Dilutions > -3
-  ) %>%
   relocate(species, animal_id, .after = Animal) %>%
   left_join(df_meta)
 skim(df_clean)
