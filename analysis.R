@@ -4,7 +4,8 @@ library(lme4)
 library(emmeans)
 library(broom.mixed)
 
-df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1)
+df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1) %>%
+  filter(Dilutions > -5)
 
 
 # Step 1: Animal-level aggregation ---------------------------------------
