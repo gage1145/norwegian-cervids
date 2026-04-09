@@ -27,8 +27,16 @@ df_formatted <- df_ %>%
 
 skim(df_formatted)
 
-df_metrics <- df_formatted %>%
-  calculate_metrics(c("Assay", "Animal", "Tissue", "Dilutions", "Wells", "date", "rxn"), threshold = 4)
+get_metrics_w_cutoff <- function(c) {
+  df_formatted %>%
+    filter(Time <= c) %>%
+    mutate(cutoff = c) %>%
+    calculate_metrics(c("Assay", "Animal", "Tissue", "Dilutions", "Wells", "cutoff", "date", "rxn"), threshold = 4)
+}
+
+cutoffs <- seq(36, 48, 4)
+
+df_metrics <- map_dfr(cutoffs, get_metrics_w_cutoff)
 
 df_meta <- read_xlsx("metadata/allraw.xlsx") %>%
   select(Animal, ID, ELISA, Genotype) %>%
