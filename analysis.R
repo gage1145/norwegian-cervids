@@ -12,7 +12,8 @@ df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1) %>
 
 
 df_animal <- df_clean %>%
-  group_by(species, animal_id, Animal, Assay, Tissue, Dilutions, ELISA) %>%
+  group_by(species, Animal, Assay, Tissue, cutoff, Dilutions, ELISA) %>%
+  mutate(Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue)) %>%
   summarise(
     across(c(MPR, MS, AUC, TtT, RAF), \(x) mean(x, na.rm = TRUE)),
     prop_crossed = mean(crossed, na.rm = TRUE),
