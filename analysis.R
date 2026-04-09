@@ -26,31 +26,103 @@ df_animal <- df_clean %>%
 
 df_roc_long <- df_animal %>%
   mutate(ELISA = as.integer(ELISA)) %>%
-  pivot_longer(c(MPR, MS, AUC), names_to = "metric")
+  pivot_longer(c(MPR, MS, AUC), names_to = "metric") %>%
+  ungroup()
 
-roc_results <- df_roc_long %>%
-  group_by(species, Assay, Tissue, metric) %>%
-  group_modify(~{
-    tryCatch({
-      ci_vals <- ci.auc(roc(.x, ELISA, value, quiet = TRUE))
-      data.frame(auc_lower = ci_vals[[1]], auc = ci_vals[[2]], auc_upper = ci_vals[[3]])
-    }, error = function(e) data.frame(auc_lower = NA, auc = NA, auc_upper = NA))
-  }) %>%
-  filter(!is.na(auc))
+distinct_combos <- df_roc_long %>%
+  summarize(
+    value = mean(value),
+    .by = c(species, Tissue, Assay, Dilutions, cutoff, metric)
+  ) %>%
+  distinct()
+
+get_roc <- function(species, Tissue, Assay, Dilutions, cutoff, metric, value) {
+  temp_df <- df_roc_long %>%
+    filter(
+      species   == .env$species,
+      Tissue    == .env$Tissue,
+      Assay     == .env$Assay,
+      Dilutions == .env$Dilutions,
+      cutoff    == .env$cutoff,
+      metric    == .env$metric
+    )
+  if (n_distinct(temp_df$ELISA) < 2) return(NULL)
+
+  temp_roc <- roc(temp_df, ELISA, value)
+  temp_roc$species   <- species
+  temp_roc$Tissue    <- Tissue
+  temp_roc$Assay     <- Assay
+  temp_roc$Dilutions <- Dilutions
+  temp_roc$cutoff    <- cutoff
+  temp_roc$metric    <- metric
+  temp_roc$value     <- value
+
+  temp_roc
+}
+
+roc_list <- distinct_combos %>%
+  pmap(get_roc) %>%
+  compact()
+
+get_roc_auc <- function(x) {
+  data.frame(
+    species   = x$species,
+    Tissue    = x$Tissue,
+    Assay     = x$Assay,
+    Dilutions = x$Dilutions,
+    cutoff    = x$cutoff,
+    metric    = x$metric,
+    value     = x$value,
+    auc       = x$auc[1]
+  )
+}
+
+get_roc_info <- function(x) {
+  temp_coords <- coords(x) %>%
+    mutate(youden = sensitivity + specificity - 1)
+  optimal_threshold <- temp_coords$threshold[which(temp_coords$youden == max(temp_coords$youden))]
+  tibble(
+    species     = x$species,
+    Tissue      = x$Tissue,
+    Assay       = x$Assay,
+    Dilutions   = x$Dilutions,
+    cutoff      = x$cutoff,
+    metric      = x$metric,
+    value       = x$value,
+    threshold   = list(temp_coords$threshold),
+    sensitivity = list(temp_coords$sensitivity),
+    specificity = list(temp_coords$specificity),
+    youden      = list(temp_coords$youden),
+    auc = auc(x)[1],
+    optimal_threshold = optimal_threshold
+  )
+}
+
+roc_coords <- map_dfr(roc_list, get_roc_info)
+
+thresholds <- list(auc = 70, mpr = 3, ms = 0.4)
 
 # AUC summary bar chart with CIs
-roc_results %>%
-  ggplot(aes(metric, auc, fill = Assay)) +
-  geom_col(position = "dodge") +
-  geom_errorbar(aes(ymin = auc_lower, ymax = auc_upper),
-                position = position_dodge(0.9), width = 0.2) +
-  geom_hline(yintercept = 0.5, linetype = "dashed") +
-  facet_grid(species ~ Tissue, scales = "free_x") +
-  labs(title = "ROC AUC by Species, Tissue, Metric, and Assay",
-       y = "AUC (95% CI)", x = "Metric") +
-  theme_bw()
+get_species_auc_chart <- function(s, t) {
+  roc_coords %>%
+    filter(species == .env$s, Tissue == .env$t, auc > 0.75) %>%
+    mutate(across(c(Dilutions, optimal_threshold), ~ round(., 2))) %>%
+    ggplot(aes(Assay, auc, fill = paste(cutoff, optimal_threshold))) +
+    geom_col(position = "dodge") +
+    geom_hline(yintercept = 0.5, linetype = "dashed") +
+    facet_grid(Dilutions ~ metric, scales = "free_x") +
+    labs(title = "ROC AUC by Species, Tissue, Metric, and Assay",
+        y = "AUC (95% CI)", x = "Metric") +
+    theme_bw()
+}
 
-ggsave("figures/roc_auc_summary.png", width = 12, height = 8)
+s_t_combos <- roc_coords %>%
+  summarize(.by = c(species, Tissue)) %>%
+  rename(s = species, t = Tissue)
+
+pmap(s_t_combos, get_species_auc_chart)
+
+# ggsave("figures/roc_auc_summary.png", width = 12, height = 8)
 
 # ROC curves for top combinations (AUC > 0.75)
 top_combos <- roc_results %>% filter(auc > 0.75)
@@ -59,7 +131,7 @@ make_roc_plot <- function(x) {
   ggplot(x, aes(1 - specificity, sensitivity, color = metric, linetype = Assay)) +
       geom_line() +
       geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
-      facet_grid(~ Tissue) +
+      facet_grid(Dilutions ~ Tissue) +
       labs(title = "ROC Curves (AUC > 0.75 combinations)",
           x = "1 - Specificity", y = "Sensitivity") +
       theme_bw()
@@ -146,8 +218,9 @@ if (nrow(lr_models) > 0) {
 # Step 4: Optimal Threshold Analysis -------------------------------------
 
 make_thresh_plot <- function(x) {
-    ggplot(x, aes(Assay, threshold, fill = Tissue)) +
+    ggplot(x, aes(Assay, threshold, fill = Tissue, label=round(threshold, 2))) +
     geom_col(position = "dodge", width=0.8/5*n_distinct(x$Tissue)) +
+    geom_text(position = "dodge") +
     facet_grid(rows=vars(metric), scales = "free") +
     labs(title = "Optimal Decision Thresholds (Youden's J, AUC > 0.75)",
          x = "Metric", y = "Threshold Value") +
