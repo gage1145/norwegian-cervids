@@ -34,7 +34,7 @@ get_metrics_w_cutoff <- function(c) {
     calculate_metrics(c("Assay", "Animal", "Tissue", "Dilutions", "Wells", "cutoff", "date", "rxn"), threshold = 4)
 }
 
-cutoffs <- seq(36, 48, 4)
+cutoffs <- seq(24, 48, 4)
 
 df_metrics <- map_dfr(cutoffs, get_metrics_w_cutoff)
 
