@@ -4,6 +4,15 @@ library(lme4)
 library(emmeans)
 library(broom.mixed)
 
+main_theme <- theme(
+	plot.title = element_text(size=30),
+	axis.title = element_text(size=24),
+	axis.text = element_text(size=12),
+	legend.title = element_text(size=24),
+	legend.text = element_text(size=20),
+	strip.text = element_text(size=24)
+)
+
 df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1) %>%
   filter(Dilutions > -5)
 
@@ -13,7 +22,10 @@ df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1) %>
 
 df_animal <- df_clean %>%
   group_by(species, Animal, Assay, Tissue, cutoff, Dilutions, ELISA) %>%
-  mutate(Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue)) %>%
+  mutate(
+		Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue),
+		cutoff = as.factor(cutoff)
+	) %>%
   summarise(
     across(c(MPR, MS, AUC, TtT, RAF), \(x) mean(x, na.rm = TRUE)),
     prop_crossed = mean(crossed, na.rm = TRUE),
@@ -98,79 +110,142 @@ get_roc_info <- function(x) {
   )
 }
 
+roc_aucs <- map_dfr(roc_list, get_roc_auc)
+
 roc_coords <- map_dfr(roc_list, get_roc_info)
 
-thresholds <- list(auc = 70, mpr = 3, ms = 0.4)
+# thresholds <- list(auc = 70, mpr = 3, ms = 0.4)
 
 # AUC summary bar chart with CIs
-get_species_auc_chart <- function(s, t) {
-  roc_coords %>%
-    filter(species == .env$s, Tissue == .env$t, auc > 0.75) %>%
-    mutate(across(c(Dilutions, optimal_threshold), ~ round(., 2))) %>%
-    ggplot(aes(Assay, auc, fill = paste(cutoff, optimal_threshold))) +
-    geom_col(position = "dodge") +
-    geom_hline(yintercept = 0.5, linetype = "dashed") +
-    facet_grid(Dilutions ~ metric, scales = "free_x") +
-    labs(title = "ROC AUC by Species, Tissue, Metric, and Assay",
-        y = "AUC (95% CI)", x = "Metric") +
-    theme_bw()
-}
+# get_species_auc_chart <- function(s, t) {
+#   roc_coords %>%
+#     filter(species == .env$s, Tissue == .env$t, auc > 0.75) %>%
+#     mutate(across(c(Dilutions, optimal_threshold), ~ round(., 2))) %>%
+#     ggplot(aes(Assay, auc, fill = paste(cutoff, optimal_threshold))) +
+#     geom_col(position = "dodge") +
+#     geom_hline(yintercept = 0.5, linetype = "dashed") +
+#     facet_grid(Dilutions ~ metric, scales = "free_x") +
+#     labs(title = "ROC AUC by Species, Tissue, Metric, and Assay",
+#         y = "AUC (95% CI)", x = "Metric") +
+#     theme_bw()
+# }
 
-s_t_combos <- roc_coords %>%
-  summarize(.by = c(species, Tissue)) %>%
-  rename(s = species, t = Tissue)
+# s_t_combos <- roc_coords %>%
+#   summarize(.by = c(species, Tissue)) %>%
+#   rename(s = species, t = Tissue)
 
-pmap(s_t_combos, get_species_auc_chart)
+# pmap(s_t_combos, get_species_auc_chart)
 
 # ggsave("figures/roc_auc_summary.png", width = 12, height = 8)
 
 # ROC curves for top combinations (AUC > 0.75)
-top_combos <- roc_results %>% filter(auc > 0.75)
+top_combos <- roc_aucs %>% 
+  select(-value) %>%
+  # mutate(cutoff = as.factor(cutoff)) %>%
+  # pivot_wider(names_from=metric, values_from=auc) %>%
+  # mutate(is_top = MPR > 0.75 & MS > 0.75 & AUC > 0.75) %>%
+  # pivot_longer(c(MPR, MS, AUC), names_to="metric", values_to="auc") %>%
+  group_by(metric) %>%
+  mutate(idx = row_number(), .groups = "drop") %>%
+  group_by(species, Assay, Tissue, Dilutions, cutoff, idx) %>%
+  summarize(auc = mean(auc), .groups = "drop") %>%
+  filter(auc > 0.75) %>%
+  arrange(idx)
+# 
+# if (nrow(top_combos) > 0) {
+roc_curve_data <- df_roc_long %>%
+	# left_join(top_combos, by = c("species", "Assay", "Tissue", "cutoff", "Dilutions")) %>%
+	group_by(species, Assay, Tissue, Dilutions, cutoff) %>%
+	group_modify(~{
+		tryCatch(
+			{
+				r <- roc(.x, ELISA, value, quiet = TRUE)
+				data.frame(sensitivity = r$sensitivities, specificity = r$specificities, threshold = r$threshold)
+			}, 
+			error = function(e) data.frame(sensitivity = NA, specificity = NA)
+		)
+	}) %>%
+	arrange(sensitivity, specificity) %>%
+	filter(!is.na(sensitivity))
+
+# roc_curve_aggregated <- roc_curve_data %>%
+#   group_by(species, Assay, Tissue, Dilutions, cutoff, metric) %>%
+#   arrange(sensitivity) %>%
+#   mutate(idx = row_number(), .groups = "drop") %>%
+#   group_by(species, Assay, Tissue, Dilutions, cutoff, idx) %>%
+#   summarize(sensitivity = mean(sensitivity), specificity = mean(specificity), .groups = "drop") %>%
+#   mutate(cutoff = as.factor(cutoff)) %>%
+#   arrange(sensitivity)
 
 make_roc_plot <- function(x) {
-  ggplot(x, aes(1 - specificity, sensitivity, color = metric, linetype = Assay)) +
-      geom_line() +
-      geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
-      facet_grid(Dilutions ~ Tissue) +
-      labs(title = "ROC Curves (AUC > 0.75 combinations)",
-          x = "1 - Specificity", y = "Sensitivity") +
-      theme_bw()
+  spec_grid <- seq(0, 1, length.out = 200)
+  x %>%
+		ggplot(aes(1 - specificity, sensitivity, color = cutoff,
+									linetype = Assay, group = interaction(cutoff, Assay))) +
+		geom_line() +
+    # stat_smooth(method="loess", n=500, se=F, fullrange=TRUE) +
+		geom_abline(slope = 1, intercept = 0, linetype = "dashed", color = "gray50") +
+		facet_grid(cols = vars(round(Dilutions, 3)), rows = vars(Tissue)) +
+    scale_x_continuous(limits=c(0,1)) +
+    scale_y_continuous(limits=c(0,1)) +
+    coord_fixed() +
+		labs(
+			x = "1 - Specificity", y = "Sensitivity"
+		) +
+		main_theme
 }
 
-if (nrow(top_combos) > 0) {
-  roc_curve_data <- df_roc_long %>%
-    semi_join(top_combos, by = c("species", "Assay", "Tissue", "metric")) %>%
-    group_by(species, Assay, Tissue, metric) %>%
-    group_modify(~{
-      tryCatch({
-        r <- roc(.x, ELISA, value, quiet = TRUE)
-        data.frame(sensitivity = r$sensitivities, specificity = r$specificities)
-      }, error = function(e) data.frame(sensitivity = NA, specificity = NA))
-    }) %>%
-    arrange(sensitivity, specificity) %>%
-    filter(!is.na(sensitivity))
+# Moose
+moose_top_combos <- top_combos %>%
+  filter(species == "M" & !(Tissue == "LN" & Dilutions > -1)) %>%
+  summarize(auc = mean(auc), .by=c(species, Tissue, Assay, Dilutions, cutoff)) %>%
+  slice_max(auc, by = Tissue, with_ties = TRUE) %>%
+  slice_min(cutoff, by = Tissue, with_ties = FALSE) %>%
+  head(20)
 
-  # Moose
-  roc_curve_data %>%
-    filter(species == "M") %>%
-    make_roc_plot()
+roc_curve_data %>%
+  filter(species == "M" & !(Tissue == "LN" & Dilutions > -1)) %>%
+	make_roc_plot() +
+  ggtitle("Moose ROC Curves")
 
-  ggsave("figures/moose_roc_curves.png", width = 12, height = 8)
-  
-  # Reindeer
-  roc_curve_data %>%
-    filter(species == "R") %>%
-    make_roc_plot()
+ggsave("figures/moose_roc_curves.png", width = 10, height = 8)
 
-  ggsave("figures/reindeer_roc_curves.png", width = 12, height = 8)
+# Reindeer
+reindeer_top_combos <- top_combos %>%
+  filter(species == "R")  %>%
+  summarize(auc = mean(auc), .by=c(species, Tissue, Assay, Dilutions, cutoff)) %>%
+  slice_max(auc, by = Tissue, with_ties = TRUE) %>%
+  slice_min(cutoff, by = Tissue, with_ties = TRUE) %>%
+  head(20)
 
-  # Red deer
-  roc_curve_data %>%
-    filter(species == "RD") %>%
-    make_roc_plot()
 
-  ggsave("figures/reddeer_roc_curves.png", width = 12, height = 8)
-}
+roc_curve_data %>%
+	filter(species == "R") %>%
+	make_roc_plot() +
+  ggtitle("Reindeer ROC Curves")
+
+
+ggsave("figures/reindeer_roc_curves.png", width = 12, height = 8)
+
+# Red deer
+reddeer_top_combos <- top_combos %>%
+  filter(species == "RD") %>%
+  summarize(auc = mean(auc), .by=c(species, Tissue, Assay, Dilutions, cutoff)) %>%
+  slice_max(auc, by = Tissue, with_ties = TRUE) %>%
+  slice_min(cutoff, by = Tissue, with_ties = TRUE) %>%
+  head(20)
+
+
+roc_curve_data %>%
+	filter(species == "RD") %>%
+	make_roc_plot() +
+  ggtitle("Red Deer ROC Curves")
+
+
+ggsave("figures/reddeer_roc_curves.png", width = 12, height = 8)
+
+best <- bind_rows(moose_top_combos, reindeer_top_combos, reddeer_top_combos)
+write.csv(best, "data/top_conditions.csv", row.names=FALSE)
 
 
 # Step 3: Species-specific Logistic Regression Models --------------------
