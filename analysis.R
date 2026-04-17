@@ -27,19 +27,25 @@ df_animal <- df_clean %>%
   mutate(
 		Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue),
 		cutoff = as.factor(cutoff)
-	) %>%
-  summarise(
-    across(c(MPR, MS, AUC, TtT, RAF, ELISA), \(x) mean(x, na.rm = TRUE)),
-    prop_crossed = mean(crossed, na.rm = TRUE),
-    n_wells = n(),
-    .groups = "drop"
-  )
+	)
+  # summarise(
+  #   across(c(MPR, MS, AUC, TtT, RAF, ELISA), \(x) mean(x, na.rm = TRUE)),
+  #   prop_crossed = mean(crossed, na.rm = TRUE),
+  #   n_wells = n(),
+  #   .groups = "drop"
+  # ) 
+  # Filter for false ROC signals
+  # filter(
+    # !(prop_crossed == 0 & ELISA), 
+      # (((ELISA == 1 & min(MPR)) > (ELISA == 0 & max(MPR))) | ((ELISA == 0 & min(MPR)) > (ELISA == 1 & max(MPR))))),
+    # .by = c(species, Assay, Tissue, cutoff, Dilutions)
+  # )
 
 
 # Step 2: Improved ROC Analysis ------------------------------------------
 
 df_roc_long <- df_animal %>%
-  select(-c(TtT, RAF, prop_crossed, n_wells)) %>%
+  # select(-c(TtT, RAF, prop_crossed, n_wells)) %>%
   mutate(ELISA = as.integer(ELISA)) %>%
   pivot_longer(c(MPR, MS, AUC), names_to = "metric") %>%
   ungroup()
@@ -122,17 +128,17 @@ roc_coords <- map_dfr(roc_list, get_roc_info) %>%
   unnest(c(sensitivity, specificity, threshold, youden)) %>%
   arrange(sensitivity)
 
-roc_coords_combined_metrics <- roc_coords %>%
-  select(species, Tissue, Assay, Dilutions, cutoff, sensitivity, specificity, metric) %>%
-  mutate(idx = row_number(), .by = c(metric)) %>%
-  pivot_wider(names_from = "metric", values_from = c("sensitivity", "specificity"),id_cols = c(species, Tissue, Assay, Dilutions, cutoff, idx)) %>%
-  mutate(
-    sensitivity = rowMeans(pick(sensitivity_MPR, sensitivity_MS, sensitivity_AUC), na.rm = TRUE),
-    specificity = rowMeans(pick(specificity_MPR, specificity_MS, specificity_AUC), na.rm = TRUE)
-  ) %>%
-  select(-c(sensitivity_MPR, sensitivity_MS, sensitivity_AUC, specificity_MPR, specificity_MS, specificity_AUC, idx)) %>%
-  group_by(species, Tissue, Assay, Dilutions, cutoff) %>%
-  arrange(sensitivity, desc(specificity))
+# roc_coords_combined_metrics <- roc_coords %>%
+#   select(species, Tissue, Assay, Dilutions, cutoff, sensitivity, specificity, metric) %>%
+#   mutate(idx = row_number(), .by = c(metric)) %>%
+#   pivot_wider(names_from = "metric", values_from = c("sensitivity", "specificity"),id_cols = c(species, Tissue, Assay, Dilutions, cutoff, idx)) %>%
+#   mutate(
+#     sensitivity = rowMeans(pick(sensitivity_MPR, sensitivity_MS, sensitivity_AUC), na.rm = TRUE),
+#     specificity = rowMeans(pick(specificity_MPR, specificity_MS, specificity_AUC), na.rm = TRUE)
+#   ) %>%
+#   select(-c(sensitivity_MPR, sensitivity_MS, sensitivity_AUC, specificity_MPR, specificity_MS, specificity_AUC, idx)) %>%
+#   group_by(species, Tissue, Assay, Dilutions, cutoff) %>%
+#   arrange(sensitivity, desc(specificity))
 
 # ROC curves for top combinations (AUC > 0.75)
 top_combos <- roc_aucs %>% 
@@ -177,7 +183,9 @@ top_moose <- top_combos %>%
   filter(species == "M")
 
 roc_coords %>%
-  filter(species == "M", Dilutions %in% top_moose$Dilutions, cutoff %in% top_moose$cutoff) %>%
+  filter(species == "M", 
+    Dilutions %in% top_moose$Dilutions, cutoff %in% top_moose$cutoff
+  ) %>%
   mutate(cutoff = as.numeric(cutoff)) %>%
   filter(cutoff == min(cutoff)) %>%
 	make_roc_plot() +
@@ -185,6 +193,12 @@ roc_coords %>%
 
 ggsave("figures/moose_roc_curves.png", width = 10, height = 8)
 
+# df_roc_long %>%
+#   filter(species == "M", cutoff == 36) %>%
+#   ggplot(aes(Tissue, value, color = as.logical(ELISA))) +
+#   geom_point(position=position_jitterdodge(0.1, dodge.width = 0.5)) +
+#   facet_grid(cols = vars(Dilutions), rows = vars(Assay, metric), scales="free") +
+#   scale_y_log10()
 
 
 # Reindeer
@@ -215,7 +229,7 @@ roc_coords %>%
 
 ggsave("figures/reddeer_roc_curves.png", width = 12, height = 8)
 
-best <- bind_rows(moose_top_combos, reindeer_top_combos, reddeer_top_combos)
+best <- bind_rows(top_moose, top_reindeer, top_reddeer)
 write.csv(best, "data/top_conditions.csv", row.names=FALSE)
 
 
