@@ -2,8 +2,8 @@ library(tidyverse)
 library(pROC)
 library(lme4)
 library(emmeans)
-library(broom.mixed)
-library(plotROC)
+library(broom)
+library(scales)
 
 main_theme <- theme(
 	plot.title = element_text(size=30),
@@ -27,7 +27,8 @@ df_animal <- df_clean %>%
   mutate(
 		Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue),
 		cutoff = as.factor(cutoff)
-	)
+	) %>%
+  ungroup()
   # summarise(
   #   across(c(MPR, MS, AUC, TtT, RAF, ELISA), \(x) mean(x, na.rm = TRUE)),
   #   prop_crossed = mean(crossed, na.rm = TRUE),
@@ -42,21 +43,53 @@ df_animal <- df_clean %>%
   # )
 
 
+# PCA --------------------------------------------------------------------
+
+pca <- df_animal %>%
+  select(MPR, MS, AUC) %>%
+  prcomp(scale. = TRUE)
+summary(pca)
+
+# pca$x <- rescale(pca$x, 0, 1)
+
+
 # Step 2: Improved ROC Analysis ------------------------------------------
+
 
 df_roc_long <- df_animal %>%
   # select(-c(TtT, RAF, prop_crossed, n_wells)) %>%
-  mutate(ELISA = as.integer(ELISA)) %>%
-  pivot_longer(c(MPR, MS, AUC), names_to = "metric") %>%
-  ungroup()
+  mutate(
+    # ELISA = as.integer(ELISA),
+    pc1 = pca$x[,1], 1, 0, 
+    pc2 = pca$x[,2], 1, 0, 
+    pc3 = pca$x[,3], 1, 0
+  ) 
+  # pivot_longer(c(MPR, MS, AUC), names_to = "metric") %>%
+  # ungroup()
+
+# PCA Visualization
+df_roc_long %>%
+  mutate(cutoff = paste(cutoff, "hr")) %>%
+  ggplot(aes(pc1, pc2, color = ELISA)) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.2) +
+  scale_color_manual(values = c("darkblue", "maroon")) +
+  facet_grid(cols = vars(cutoff)) +
+  # coord_fixed() +
+  main_theme +
+  theme(
+    legend.position = "bottom"
+  )
+ggsave("pca.png", path = "figures", height=6, width = 12)
 
 distinct_combos <- df_roc_long %>%
   summarize(
     # value = mean(value),
-    .by = c(species, Tissue, Assay, Dilutions, cutoff, metric)
+    .by = c(species, Tissue, Assay, Dilutions, cutoff)
   )
 
-get_roc <- function(species, Tissue, Assay, Dilutions, cutoff, metric) {
+get_roc <- function(species, Tissue, Assay, Dilutions, cutoff) {
   temp_df <- df_roc_long %>%
     filter(
       species   == .env$species,
@@ -64,7 +97,7 @@ get_roc <- function(species, Tissue, Assay, Dilutions, cutoff, metric) {
       Assay     == .env$Assay,
       Dilutions == .env$Dilutions,
       cutoff    == .env$cutoff,
-      metric    == .env$metric
+      # metric    == .env$metric
     )
   
   if (n_distinct(temp_df$ELISA) < 2) {
@@ -72,13 +105,13 @@ get_roc <- function(species, Tissue, Assay, Dilutions, cutoff, metric) {
     return(NULL)
   }
 
-  temp_roc <- roc(temp_df, ELISA, value, direction = "<")
+  temp_roc <- roc(temp_df, ELISA, pc1, direction = ">")
   temp_roc$species   <- species
   temp_roc$Tissue    <- Tissue
   temp_roc$Assay     <- Assay
   temp_roc$Dilutions <- Dilutions
   temp_roc$cutoff    <- cutoff
-  temp_roc$metric    <- metric
+  # temp_roc$metric    <- metric
   # temp_roc$value     <- value
 
   temp_roc
@@ -95,7 +128,7 @@ get_roc_auc <- function(x) {
     Assay     = x$Assay,
     Dilutions = x$Dilutions,
     cutoff    = x$cutoff,
-    metric    = x$metric,
+    # metric    = x$metric,
     # value     = x$value,
     auc       = x$auc[1]
   )
@@ -128,37 +161,17 @@ roc_coords <- map_dfr(roc_list, get_roc_info) %>%
   unnest(c(sensitivity, specificity, threshold, youden)) %>%
   arrange(sensitivity)
 
-# roc_coords_combined_metrics <- roc_coords %>%
-#   select(species, Tissue, Assay, Dilutions, cutoff, sensitivity, specificity, metric) %>%
-#   mutate(idx = row_number(), .by = c(metric)) %>%
-#   pivot_wider(names_from = "metric", values_from = c("sensitivity", "specificity"),id_cols = c(species, Tissue, Assay, Dilutions, cutoff, idx)) %>%
-#   mutate(
-#     sensitivity = rowMeans(pick(sensitivity_MPR, sensitivity_MS, sensitivity_AUC), na.rm = TRUE),
-#     specificity = rowMeans(pick(specificity_MPR, specificity_MS, specificity_AUC), na.rm = TRUE)
-#   ) %>%
-#   select(-c(sensitivity_MPR, sensitivity_MS, sensitivity_AUC, specificity_MPR, specificity_MS, specificity_AUC, idx)) %>%
-#   group_by(species, Tissue, Assay, Dilutions, cutoff) %>%
-#   arrange(sensitivity, desc(specificity))
 
 # ROC curves for top combinations (AUC > 0.75)
 top_combos <- roc_aucs %>% 
-  # group_by(metric) %>%
-  # mutate(idx = row_number(), .groups = "drop") %>%
-  # group_by(species, Assay, Tissue, Dilutions, cutoff, idx) %>%
-  # summarize(auc = mean(auc), .groups = "drop") %>%
-  # filter(auc > 0.75) %>%
-  group_by(species, Tissue, Assay, metric) %>%
+  group_by(species, Tissue, Assay) %>%
   slice_max(auc, with_ties = TRUE) %>%
   slice_min(as.numeric(cutoff))
 
 make_roc_plot <- function(x) {
   x %>%
-		ggplot(aes(specificity, sensitivity, color = metric,
-									linetype = Assay, group = interaction(metric, Assay))) +
-    # geom_line() +
+		ggplot(aes(specificity, sensitivity, color = Assay, group = Assay)) +
 		geom_step() +
-    # stat_smooth(method="loess", n=10, se=F, fullrange=TRUE) +
-    # geom_roc(n.cuts = 0) +
 		geom_abline(slope = 1, intercept = 1, linetype = "dashed", color = "gray50", inherit.aes = FALSE) +
 		facet_grid(cols = vars(round(Dilutions, 3)), rows = vars(Tissue)) +
     scale_x_reverse(limits=c(0,1)) +
@@ -171,14 +184,6 @@ make_roc_plot <- function(x) {
 }
 
 # Moose
-# moose_top_combos <- top_combos %>%
-#   filter(species == "M" & !(Tissue == "LN" & Dilutions > -1)) %>%
-#   summarize(auc = mean(auc), .by=c(species, Tissue, Assay, Dilutions, cutoff)) %>%
-#   arrange(desc(auc)) %>%
-  # slice_max(auc, by = Tissue, with_ties = TRUE) %>%
-  # slice_min(cutoff, by = Tissue, with_ties = FALSE) %>%
-  # head(20)
-
 top_moose <- top_combos %>%
   filter(species == "M")
 
@@ -192,13 +197,6 @@ roc_coords %>%
   ggtitle("Moose ROC Curves")
 
 ggsave("figures/moose_roc_curves.png", width = 10, height = 8)
-
-# df_roc_long %>%
-#   filter(species == "M", cutoff == 36) %>%
-#   ggplot(aes(Tissue, value, color = as.logical(ELISA))) +
-#   geom_point(position=position_jitterdodge(0.1, dodge.width = 0.5)) +
-#   facet_grid(cols = vars(Dilutions), rows = vars(Assay, metric), scales="free") +
-#   scale_y_log10()
 
 
 # Reindeer
