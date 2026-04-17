@@ -231,48 +231,6 @@ best <- bind_rows(top_moose, top_reindeer, top_reddeer)
 write.csv(best, "data/top_conditions.csv", row.names=FALSE)
 
 
-# Step 3: Species-specific Logistic Regression Models --------------------
-# Univariate models per metric to avoid multicollinearity (MPR:MS r=0.99, MPR:AUC r=0.89)
-# Average across dilutions first: one row per animal x Assay x Tissue,
-# so no repeated structure remains and plain glm() suffices
-
-# df_lr <- df_animal %>%
-#   group_by(species, animal_id, Assay, Tissue, ELISA) %>%
-#   summarise(across(c(MPR, MS, AUC), \(x) mean(x, na.rm = TRUE)), .groups = "drop") %>%
-#   mutate(ELISA = as.integer(ELISA)) %>%
-#   pivot_longer(c(MPR, MS, AUC), names_to = "metric")
-
-# lr_models <- df_lr %>%
-#   group_by(species, metric) %>%
-#   mutate(value = scale(value)) %>%
-#   group_modify(~{
-#     mod <- tryCatch(
-#       glm(ELISA ~ value + Assay * Tissue, data = .x, family = binomial),
-#       warning = function(w) NULL,
-#       error   = function(e) NULL
-#     )
-#     if (is.null(mod) || !mod$converged) return(data.frame())
-#     broom::tidy(mod, exponentiate = TRUE)
-#   })
-
-# if (nrow(lr_models) > 0) {
-#   lr_models %>%
-#     filter(term != "(Intercept)") %>%
-#     ggplot(aes(term, estimate)) +
-#     geom_point(position = position_dodge(0.5)) +
-#     geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error),
-#                   position = position_dodge(0.5), width = 0.2) +
-#     geom_hline(yintercept = 1, linetype = "dashed") +
-#     facet_grid(rows=vars(metric), scales = "free_y") +
-#     coord_flip() +
-#     labs(title = "Odds Ratios from Logistic Regression by Species/Tissue",
-#          y = "Odds Ratio (95% CI)") +
-#     theme_bw()
-
-#   ggsave("figures/logistic_regression_odds_ratios.png", width = 12, height = 8)
-# }
-
-
 # Step 4: Optimal Threshold Analysis -------------------------------------
 
 make_thresh_plot <- function(x) {
@@ -323,37 +281,4 @@ if (nrow(threshold_results) > 0) {
 
   print(threshold_results)
 }
-
-
-# Step 5: Per-species Mixed Effects Models --------------------------------
-
-# metrics_list <- c("AUC", "MPR", "MS")
-
-# species_lmer <- map(species_list, function(sp) {
-#   df_sp <- df_clean %>% filter(species == sp)
-
-#   map(metrics_list, function(met) {
-#     formula <- as.formula(paste0(met, " ~ Assay * Tissue + Assay * Dilutions + (1|animal_id) + (1|rxn)"))
-#     tryCatch(
-#       list(species = sp, metric = met, model = lmer(formula, df_sp)),
-#       error = function(e) NULL
-#     )
-#   }) %>% compact()
-# }) %>% flatten()
-
-# species_emm <- map(species_lmer, function(m) {
-#   tryCatch({
-#     df_sp <- df_clean %>% filter(species == m$species)
-#     emm <- emmeans(m$model, ~ Assay | Tissue,
-#                    at = list(Dilutions = unique(df_sp$Dilutions)))
-#     list(species = m$species, metric = m$metric, emmeans = emm)
-#   }, error = function(e) NULL)
-# }) %>% compact()
-
-# species_contrasts <- map(species_emm, function(em) {
-#   tryCatch({
-#     con <- contrast(em$emmeans, interaction=TRUE)
-#     list(species = em$species, metric = em$metric, contrast = con)
-#   }, error = function(e) NULL)
-# }) %>% compact()
 
