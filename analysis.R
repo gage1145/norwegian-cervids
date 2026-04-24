@@ -23,59 +23,37 @@ df_clean <- read.csv("data/clean_data.csv", check.names=FALSE, row.names = 1) %>
 
 
 df_animal <- df_clean %>%
-  group_by(species, Animal, Assay, Tissue, cutoff, Dilutions) %>%
   mutate(
 		Tissue = ifelse(str_detect(Tissue, "SK") | Tissue == "Ear", "skin", Tissue),
-		cutoff = as.factor(cutoff)
-	) %>%
-  ungroup()
-  # summarise(
-  #   across(c(MPR, MS, AUC, TtT, RAF, ELISA), \(x) mean(x, na.rm = TRUE)),
-  #   prop_crossed = mean(crossed, na.rm = TRUE),
-  #   n_wells = n(),
-  #   .groups = "drop"
-  # ) 
-  # Filter for false ROC signals
-  # filter(
-    # !(prop_crossed == 0 & ELISA), 
-      # (((ELISA == 1 & min(MPR)) > (ELISA == 0 & max(MPR))) | ((ELISA == 0 & min(MPR)) > (ELISA == 1 & max(MPR))))),
-    # .by = c(species, Assay, Tissue, cutoff, Dilutions)
-  # )
+		cutoff = as.factor(cutoff),
+    .by = c(species, Animal, Assay, Tissue, cutoff, Dilutions)
+	)
 
 
 # PCA --------------------------------------------------------------------
+
 
 pca <- df_animal %>%
   select(MPR, MS, AUC) %>%
   prcomp(scale. = TRUE)
 summary(pca)
 
-# pca$x <- rescale(pca$x, 0, 1)
-
-
-# Step 2: Improved ROC Analysis ------------------------------------------
-
-
-df_roc_long <- df_animal %>%
-  # select(-c(TtT, RAF, prop_crossed, n_wells)) %>%
+df_long <- df_animal %>%
   mutate(
-    # ELISA = as.integer(ELISA),
     pc1 = pca$x[,1], 1, 0, 
     pc2 = pca$x[,2], 1, 0, 
     pc3 = pca$x[,3], 1, 0
-  ) 
-  # pivot_longer(c(MPR, MS, AUC), names_to = "metric") %>%
-  # ungroup()
+  )
 
 # PCA Visualization
-df_roc_long %>%
+df_long %>%
   mutate(cutoff = paste(cutoff, "hr")) %>%
   ggplot(aes(pc1, pc2, color = ELISA)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_vline(xintercept = 0, linetype = "dashed") +
   geom_point(alpha = 0.2) +
   scale_color_manual(values = c("darkblue", "maroon")) +
-  facet_grid(cols = vars(cutoff)) +
+  facet_grid(cols = vars(cutoff), rows = vars(Tissue)) +
   # coord_fixed() +
   main_theme +
   theme(
@@ -83,25 +61,23 @@ df_roc_long %>%
   )
 ggsave("pca.png", path = "figures", height=6, width = 12)
 
-distinct_combos <- df_roc_long %>%
+distinct_combos <- df_long %>%
   summarize(
     # value = mean(value),
     .by = c(species, Tissue, Assay, Dilutions, cutoff)
   )
 
 get_roc <- function(species, Tissue, Assay, Dilutions, cutoff) {
-  temp_df <- df_roc_long %>%
+  temp_df <- df_long %>%
     filter(
       species   == .env$species,
       Tissue    == .env$Tissue,
       Assay     == .env$Assay,
       Dilutions == .env$Dilutions,
-      cutoff    == .env$cutoff,
-      # metric    == .env$metric
+      cutoff    == .env$cutoff
     )
   
   if (n_distinct(temp_df$ELISA) < 2) {
-    # print(species, Tissue, Assay, Dilutions, cutoff, metric)
     return(NULL)
   }
 
@@ -111,8 +87,6 @@ get_roc <- function(species, Tissue, Assay, Dilutions, cutoff) {
   temp_roc$Assay     <- Assay
   temp_roc$Dilutions <- Dilutions
   temp_roc$cutoff    <- cutoff
-  # temp_roc$metric    <- metric
-  # temp_roc$value     <- value
 
   temp_roc
 }
@@ -128,16 +102,14 @@ get_roc_auc <- function(x) {
     Assay     = x$Assay,
     Dilutions = x$Dilutions,
     cutoff    = x$cutoff,
-    # metric    = x$metric,
-    # value     = x$value,
-    auc       = x$auc[1]
+    auc       = as.numeric(auc(x))
   )
 }
 
 get_roc_info <- function(x) {
-  temp_coords <- coords(x) %>%
-    mutate(youden = sensitivity + specificity - 1)
-  optimal_threshold <- temp_coords$threshold[which(temp_coords$youden == max(temp_coords$youden))]
+  temp_coords <- coords(x) 
+    # mutate(youden = sensitivity + specificity - 1)
+  # optimal_threshold <- temp_coords$threshold[which(temp_coords$youden == max(temp_coords$youden))]
   tibble(
     species     = x$species,
     Tissue      = x$Tissue,
@@ -145,35 +117,46 @@ get_roc_info <- function(x) {
     Dilutions   = x$Dilutions,
     cutoff      = x$cutoff,
     metric      = x$metric,
-    # value       = x$value,
     threshold   = list(temp_coords$threshold),
     sensitivity = list(temp_coords$sensitivity),
     specificity = list(temp_coords$specificity),
-    youden      = list(temp_coords$youden),
-    auc = auc(x)[2],
-    optimal_threshold = optimal_threshold
+    # youden      = list(temp_coords$youden),
+    auc = as.numeric(auc(x)),
+    # optimal_threshold = optimal_threshold
   )
 }
 
-roc_aucs <- map_dfr(roc_list, get_roc_auc)
+roc_aucs <- map_dfr(roc_list, get_roc_auc) %>%
+  mutate(
+    auc = round(auc, 3),
+    y = ifelse(Assay == "NQ", 0.25, 0.15)
+  )
 
 roc_coords <- map_dfr(roc_list, get_roc_info) %>%
-  unnest(c(sensitivity, specificity, threshold, youden)) %>%
-  arrange(sensitivity)
+  unnest(c(sensitivity, specificity, threshold)) %>%
+  group_by(species, Tissue, Assay, Dilutions, cutoff) %>%
+  arrange(
+    sensitivity,
+    .by_group = TRUE
+  ) %>%
+  ungroup()
 
-
-# ROC curves for top combinations (AUC > 0.75)
+# Find top combinations of variables.
 top_combos <- roc_aucs %>% 
-  group_by(species, Tissue, Assay) %>%
+  group_by(species, Tissue, Assay, Dilutions) %>%
   slice_max(auc, with_ties = TRUE) %>%
   slice_min(as.numeric(cutoff))
 
 make_roc_plot <- function(x) {
   x %>%
 		ggplot(aes(specificity, sensitivity, color = Assay, group = Assay)) +
-		geom_step() +
-		geom_abline(slope = 1, intercept = 1, linetype = "dashed", color = "gray50", inherit.aes = FALSE) +
+		geom_step(linewidth=1.2) +
+		geom_abline(
+      slope = 1, intercept = 1, linetype = "dashed", 
+      color = "gray50", inherit.aes = FALSE
+    ) +
 		facet_grid(cols = vars(round(Dilutions, 3)), rows = vars(Tissue)) +
+    scale_color_manual(values=c("#ff9c59", "purple")) +
     scale_x_reverse(limits=c(0,1)) +
     scale_y_continuous(limits=c(0,1)) +
     coord_fixed() +
@@ -194,9 +177,13 @@ roc_coords %>%
   mutate(cutoff = as.numeric(cutoff)) %>%
   filter(cutoff == min(cutoff)) %>%
 	make_roc_plot() +
+  geom_text(
+    aes(x = 0.35, y = y, color = Assay, label = sprintf("%s, %shr AUC = %s", Assay, cutoff, format(round(auc, 3), nsmall=3)), group = Assay),
+    data = top_moose, inherit.aes = FALSE, size = 5
+  ) +
   ggtitle("Moose ROC Curves")
 
-ggsave("figures/moose_roc_curves.png", width = 10, height = 8)
+ggsave("figures/moose_roc_curves.png", width = 16, height = 10)
 
 
 # Reindeer
@@ -208,6 +195,10 @@ roc_coords %>%
   mutate(cutoff = as.numeric(cutoff)) %>%
   filter(cutoff == min(cutoff)) %>%
 	make_roc_plot() +
+  geom_text(
+    aes(x = 0.35, y = y, color = Assay, label = sprintf("%s, %shr AUC = %s", Assay, cutoff, format(round(auc, 3), nsmall=3)), group = Assay),
+    data = top_reindeer, inherit.aes = FALSE
+  ) +
   ggtitle("Reindeer ROC Curves")
 
 
@@ -231,54 +222,32 @@ best <- bind_rows(top_moose, top_reindeer, top_reddeer)
 write.csv(best, "data/top_conditions.csv", row.names=FALSE)
 
 
-# Step 4: Optimal Threshold Analysis -------------------------------------
 
-make_thresh_plot <- function(x) {
-    ggplot(x, aes(Assay, threshold, fill = Tissue, label=round(threshold, 2))) +
-    geom_col(position = "dodge", width=0.8/5*n_distinct(x$Tissue)) +
-    geom_text(position = "dodge") +
-    facet_grid(rows=vars(metric), scales = "free") +
-    labs(title = "Optimal Decision Thresholds (Youden's J, AUC > 0.75)",
-         x = "Metric", y = "Threshold Value") +
-    theme_bw()
-}
+# K-means ----------------------------------------------------------------
 
-threshold_results <- df_roc_long %>%
-  semi_join(roc_results %>% filter(auc > 0.75),
-            by = c("species", "Assay", "Tissue", "metric")) %>%
-  group_by(species, Assay, Tissue, metric) %>%
-  group_modify(~{
-    tryCatch({
-      r <- roc(.x, ELISA, value, quiet = TRUE)
-      coords_df <- coords(r, "best", best.method = "youden",
-                          ret = c("threshold", "sensitivity", "specificity"))
-      as.data.frame(coords_df)
-    }, error = function(e) data.frame(threshold = NA, sensitivity = NA, specificity = NA))
-  }) %>%
-  filter(!is.na(threshold))
 
-if (nrow(threshold_results) > 0) {
-  # Moose
-  threshold_results %>%
-    filter(species == "M") %>%
-    make_thresh_plot()
+library(plotly)
 
-  ggsave("figures/moose_optimal_thresholds.png", width = 10, height = 7)
-  
-  # Moose
-  threshold_results %>%
-    filter(species == "R") %>%
-    make_thresh_plot()
+df_km <- df_long %>%
+  mutate(
+    pc2 = pca$x[,2], 
+    pc3 = pca$x[,3],
+  ) %>%
+  filter(if_all(c(MPR, MS, AUC), ~ . > 0)) %>%
+  mutate(
+    across(c(MPR, MS, AUC), log)
+  )
 
-  ggsave("figures/reindeer_optimal_thresholds.png", width = 10, height = 7)
-  
-  # Moose
-  threshold_results %>%
-    filter(species == "RD") %>%
-    make_thresh_plot()
+set.seed(102470238)
 
-  ggsave("figures/reddeer_optimal_thresholds.png", width = 10, height = 7)
+km.out <- df_km %>%
+  select(MPR, MS, AUC) %>%
+  kmeans(centers=3, nstart = 20)
+km.out
 
-  print(threshold_results)
-}
+df_km$cluster_id <- factor(km.out$cluster)
 
+df_km %>%
+  plot_ly(x = ~MPR, y = ~MS, frame = ~mpi, color = ~ELISA, colors = c('#BF382A', '#0C4B8E'), marker = list(size = 3)) %>%
+  add_markers(opacity = 0.1) %>%
+  animation_slider()
