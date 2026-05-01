@@ -35,6 +35,32 @@ df_animal <- df_clean %>%
 # PCA --------------------------------------------------------------------
 
 
+# mpms <- cor(df_animal$mpr, df_animal$ms)
+
+cor_plot <- df_animal %>%
+  filter(cutoff == 48) %>%
+  mutate(
+    ELISA = ifelse(ELISA, "Positive", "Negative"),
+    Tissue = ifelse(Tissue == "skin", "SK", Tissue),
+    cutoff = paste(cutoff, "hr")
+  ) %>%
+  ggplot(aes(x = MPR, y = MS, color = AUC)) +
+  geom_point() +
+  facet_grid(rows=vars(Tissue), cols=vars(cutoff), scales = "fixed") +
+  scale_color_gradient(low="navy", high="darkorange") +
+  main_theme +
+  labs(
+    title = "Metric Correlation",
+    x = "Maxpoint Ratio",
+    y = "Max Slope"
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.text=element_text(size=12)
+  )
+cor_plot
+ggsave("corplot.png", path="figures", width = 12, height=12)
+
 pca <- df_animal %>%
   select(MPR, MS, AUC) %>%
   prcomp(scale. = TRUE)
@@ -42,9 +68,16 @@ summary(pca)
 
 df_long <- df_animal %>%
   mutate(
-    pc1 = pca$x[,1], 1, 0, 
-    pc2 = pca$x[,2], 1, 0, 
-    pc3 = pca$x[,3], 1, 0
+    pc1 = log(rescale(pca$x[,1], c(0, 1))), 
+    pc2 = log(rescale(pca$x[,2], c(0, 1))), 
+    pc3 = log(rescale(pca$x[,3], c(0, 1)))
+  )
+
+df_long <- df_animal %>%
+  mutate(
+    pc1 = pca$x[,1], 
+    pc2 = pca$x[,2], 
+    pc3 = pca$x[,3]
   )
 
 # PCA Visualization
@@ -65,10 +98,19 @@ pca_plot <- df_long %>%
   ggtitle("Principal Component Analysis") +
   main_theme +
   theme(
-    legend.position = "bottom"
+    plot.title = element_text(hjust=0.5),
+    legend.position = "bottom",
+    legend.text=element_text(size=12)
   )
 pca_plot
 ggsave("pca.png", path = "figures", height=6, width = 12)
+
+ggarrange(cor_plot, pca_plot, ncol=2, align="h", widths=c(2, 5))
+ggsave("cor_pca_combo.png", path="figures", width=16, height=12)
+
+
+# ROC --------------------------------------------------------------------
+
 
 distinct_combos <- df_long %>%
   summarize(
@@ -203,7 +245,8 @@ top_moose_join <- top_moose_base %>%
   select(species, Tissue, Assay, Dilutions, cutoff)
 
 top_moose <- top_moose_base %>%
-  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC"))
+  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC")) %>%
+  arrange(Tissue, desc(auc), cutoff)
 
 m_roc_plot <- roc_coords %>%
   inner_join(top_moose_join) %>%
@@ -230,7 +273,8 @@ top_reindeer_join <- top_reindeer_base %>%
   select(species, Tissue, Assay, Dilutions, cutoff)
 
 top_reindeer <- top_reindeer_base %>%
-  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC"))
+  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC")) %>%
+  arrange(Tissue, desc(auc), cutoff)
 
 r_roc_plot <- roc_coords %>%
   inner_join(top_reindeer_join) %>%
@@ -256,7 +300,8 @@ top_reddeer_join <- top_reddeer_base %>%
   select(species, Tissue, Assay, Dilutions, cutoff)
 
 top_reddeer <- top_reddeer_base %>%
-  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC"))
+  mutate(Assay = ifelse(Assay == "RT", "RT-QuIC", "Nano-QuIC")) %>%
+  arrange(Tissue, desc(auc), cutoff)
 
 rd_roc_plot <- roc_coords %>%
   inner_join(top_reddeer_join) %>%
@@ -329,17 +374,36 @@ optimal_tissue_params <- top_combos %>%
     .by = c(Tissue, Assay, Dilutions)
   ) %>%
   group_by(Tissue, Assay) %>%
-  filter(auc == max(auc))
+  filter(auc == max(auc)) %>%
 write.csv(optimal_tissue_params, "data/top_tissue_conditions.csv", row.names = FALSE)
 
 
 {
+  df_opt_dil <- df_long %>%
+    filter(
+        !(Dilutions %in% c(-5, -4)),
+        Tissue != "skin"
+    ) %>%
+    mutate(
+        Tissue = factor(Tissue, levels = c("BR", "LN"), labels = c("Brainstem", "Lymph Node")),
+        Assay = factor(Assay, levels = c("NQ", "RT"), labels=c("Nano-QuIC", "RT-QuIC")),
+        # Dilutions = factor(Dilutions, levels = c(-3, -2), labels = c(expression("10^{-3}"), expression("10^{-2}")))
+    )
+  
+#   dil_labs <- as_labeller(
+#   c(
+#     `-3` = '10^-3', 
+#     `-2` = '10^-2'
+#     ), 
+#   default = label_parsed
+# )
+  
   cutoff_fig <- function(t) {
-    df_long %>%
+    df_opt_dil %>%
       filter(cutoff == 48, Tissue == t) %>%
       ggplot(aes(species, TtT, color=ELISA)) +
       geom_point(position=position_jitter(0.2), size=2, alpha=0.7) + 
-      geom_hline(yintercept = 24, linetype = "dashed") +
+      geom_hline(yintercept = 32, linetype = "dashed") +
       # stat_compare_means(
       #   method = "anova",
       #   label = "p.signif",
@@ -351,19 +415,74 @@ write.csv(optimal_tissue_params, "data/top_tissue_conditions.csv", row.names = F
       #   hide.ns = TRUE,
       # ) +
       facet_grid(cols=vars(Assay), rows=vars(Dilutions)) +
-      scale_y_continuous(breaks=seq(0, 48, 12)) +
+      scale_y_continuous(breaks=seq(0, 48, 6)) +
       scale_color_manual(values = c("darkblue", "maroon")) +
       ggtitle(t) +
       coord_flip() +
+      labs(
+        title = t,
+        y = "Time to Threshold (h)"
+      ) +
       # scale_y_log10()+
       main_theme +
       theme(
+        plot.title = element_text(hjust=0.5),
         axis.title.y = element_blank()
       )
   }
-    
-  cutoff_figs <- lapply(unique(df_long$Tissue), cutoff_fig)
 
-  cutoffs_arranged <- ggarrange(plotlist = cutoff_figs, font.label = list(size=30), labels=c("A", "B", "C"), nrow=1, align = "v", legend = "none")
-  ggarrange(cutoffs_arranged, pca_plot, ncol=1, labels = c("", "D"), font.label = list(size=30), common.legend = TRUE, legend="bottom")
+    # filter(ifelse(Tissue %in% c("BR", "LN"), Dilutions %in% c(-3, -3), ))
+    
+  cutoff_figs <- lapply(unique(df_opt_dil$Tissue), cutoff_fig)
+
+  cutoffs_arranged <- ggarrange(
+    plotlist = cutoff_figs, font.label = list(size=30), 
+    nrow=1, align = "v", legend = "none"
+  )
+  cutoffs_arranged
+  ggsave("cutoffs.png", path="figures", width=16, height=10)
+#   ggarrange(cutoffs_arranged, pca_plot, ncol=1, labels = c("", "C"), 
+#             font.label = list(size=30), common.legend = TRUE, legend="bottom"
+#     )
 }
+# ggsave("pca_combo.png", path="figures", width=12, height=12)
+
+
+# AUC Line Graph -----------------------------------------------------------
+
+roc_aucs %>%
+  mutate(cutoff = as.numeric(as.character(cutoff))) %>%
+  summarize(
+    auc = mean(auc),
+    .by = c(Tissue, Assay, Dilutions, cutoff)
+  ) %>%
+  ggplot(aes(cutoff, auc, color=Assay, fill=Assay, label=round(auc, 2))) +
+  geom_point(size=4) +
+#   geom_area(position="jitter", alpha=1) +
+  geom_line() +
+#   geom_text() +
+  facet_grid(rows=vars(round(Dilutions, 2)), cols=vars(Tissue)) +
+  scale_y_continuous(breaks=seq(0.4, 1, 0.1)) +
+  scale_x_continuous(breaks=seq(24,48,4), limits=c(24,48)) +
+  labs(
+    x = "Cutoff (hr)",
+    y = "Area Under ROC Curve",
+    title = "ROC Results by Tissue"
+  ) +
+  main_theme +
+  theme(
+    legend.position = c(0.15, 0.2),
+    legend.direction = "horizontal",
+    plot.title = element_text(hjust=0.5)
+  )
+
+ggsave("roc_results_by_tissue.png", path="figures", width=16, height=12)
+
+
+# Tables --------------------------------------------------------------------
+
+
+top_all <- bind_rows(top_moose, top_reindeer, top_reddeer) %>%
+  select(-y) %>%
+  filter(auc > 0.7)
+write.csv(top_all, "data/top_all.csv", row.names=FALSE)
