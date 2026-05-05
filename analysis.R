@@ -6,11 +6,12 @@ library(broom)
 library(scales)
 library(ggpubr)
 library(patchwork)
+library(ggrepel)
 
 main_theme <- theme(
 	plot.title = element_text(size=30),
 	axis.title = element_text(size=24),
-	axis.text = element_text(size=12),
+	axis.text = element_text(size=20),
 	legend.title = element_text(size=24),
 	legend.text = element_text(size=20),
 	strip.text = element_text(size=24)
@@ -36,6 +37,36 @@ df_animal <- df_clean %>%
 
 
 # mpms <- cor(df_animal$mpr, df_animal$ms)
+
+metric_combos <- combn(c("MPR", "MS", "AUC"), 2) |> t() |> as.data.frame()
+colnames(metric_combos) <- c("x", "y")
+
+make_cor_plot <- function(x, y) {
+  df_cor <- df_animal %>%
+    filter(cutoff == 48) %>%
+    mutate(
+    Tissue = ifelse(Tissue == "skin", "SK", Tissue),
+    cutoff = paste(cutoff, "hr")
+    )
+  df_cor %>%
+    ggplot(aes(x=.data[[x]], y=.data[[y]])) +
+    geom_point(color="purple", alpha=0.2) +
+    stat_smooth(method = "lm", color="darkorange") +
+    # stat_regline_equation(aes(label = ..adj.rr.label..)) +
+    stat_cor(aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~','~")), label.y.npc = 1, size=6) +
+    # facet_grid(rows=vars(Tissue), cols=vars(cutoff), scales = "fixed") +
+    scale_color_gradient(low="navy", high="darkorange") +
+    main_theme +
+    theme(
+      legend.position = "bottom",
+      legend.text=element_text(size=12)
+    )
+}
+
+cor_plots <- pmap(metric_combos, make_cor_plot)
+ggarrange(plotlist = cor_plots, ncol=3, align="hv")
+ggsave("corplot_separated.png", path="figures", width=16, height=12)
+  
 
 cor_plot <- df_animal %>%
   filter(cutoff == 48) %>%
@@ -79,6 +110,8 @@ df_long <- df_animal %>%
     pc2 = pca$x[,2], 
     pc3 = pca$x[,3]
   )
+
+write.csv(df_long, "data/pca.csv")
 
 # PCA Visualization
 pca_plot <- df_long %>%
@@ -182,6 +215,8 @@ roc_aucs <- map_dfr(roc_list, get_roc_auc) %>%
     auc = round(auc, 3),
     y = ifelse(Assay == "NQ", 0.25, 0.1)
   )
+
+write.csv(roc_aucs, "data/aucs.csv")
 
 roc_coords <- map_dfr(roc_list, get_roc_info) %>%
   unnest(c(sensitivity, specificity, threshold)) %>%
@@ -374,65 +409,52 @@ optimal_tissue_params <- top_combos %>%
     .by = c(Tissue, Assay, Dilutions)
   ) %>%
   group_by(Tissue, Assay) %>%
-  filter(auc == max(auc)) %>%
+  filter(auc == max(auc))
 write.csv(optimal_tissue_params, "data/top_tissue_conditions.csv", row.names = FALSE)
 
 
-{
-  df_opt_dil <- df_long %>%
-    filter(
-        !(Dilutions %in% c(-5, -4)),
-        Tissue != "skin"
-    ) %>%
-    mutate(
-        Tissue = factor(Tissue, levels = c("BR", "LN"), labels = c("Brainstem", "Lymph Node")),
-        Assay = factor(Assay, levels = c("NQ", "RT"), labels=c("Nano-QuIC", "RT-QuIC")),
-        # Dilutions = factor(Dilutions, levels = c(-3, -2), labels = c(expression("10^{-3}"), expression("10^{-2}")))
-    )
-  
-#   dil_labs <- as_labeller(
-#   c(
-#     `-3` = '10^-3', 
-#     `-2` = '10^-2'
-#     ), 
-#   default = label_parsed
-# )
-  
-  cutoff_fig <- function(t) {
-    df_opt_dil %>%
-      filter(cutoff == 48, Tissue == t) %>%
-      ggplot(aes(species, TtT, color=ELISA)) +
-      geom_point(position=position_jitter(0.2), size=2, alpha=0.7) + 
-      geom_hline(yintercept = 32, linetype = "dashed") +
-      # stat_compare_means(
-      #   method = "anova",
-      #   label = "p.signif",
-      #   label.y = 1,
-      #   tip.length = 0.01,
-      #   size=8,
-      #   fontface = "bold",
-      #   show.legend = FALSE,
-      #   hide.ns = TRUE,
-      # ) +
-      facet_grid(cols=vars(Assay), rows=vars(Dilutions)) +
-      scale_y_continuous(breaks=seq(0, 48, 6)) +
-      scale_color_manual(values = c("darkblue", "maroon")) +
-      ggtitle(t) +
-      coord_flip() +
-      labs(
-        title = t,
-        y = "Time to Threshold (h)"
-      ) +
-      # scale_y_log10()+
-      main_theme +
-      theme(
-        plot.title = element_text(hjust=0.5),
-        axis.title.y = element_blank()
-      )
-  }
+df_opt_dil <- df_long %>%
+  filter(
+      !(Dilutions %in% c(-5, -4)),
+      Tissue != "skin"
+  ) %>%
+  mutate(
+      Tissue = factor(Tissue, levels = c("BR", "LN"), labels = c("Brainstem", "Lymph Node")),
+      Assay = factor(Assay, levels = c("NQ", "RT"), labels=c("Nano-QuIC", "RT-QuIC")),
+      # Dilutions = factor(Dilutions, levels = c(-3, -2), labels = c(expression("10^{-3}"), expression("10^{-2}")))
+  )
 
-    # filter(ifelse(Tissue %in% c("BR", "LN"), Dilutions %in% c(-3, -3), ))
-    
+cutoff_fig <- function(t) {
+  df_opt_dil %>%
+    filter(cutoff == 48, Tissue == t) %>%
+    ggplot(aes(species, TtT, color=ELISA)) +
+    geom_point(position=position_jitter(0.2), size=2, alpha=0.7) + 
+    geom_hline(yintercept = 32, linetype = "dashed") +
+    # stat_compare_means(
+    #   method = "anova",
+    #   label = "p.signif",
+    #   label.y = 1,
+    #   tip.length = 0.01,
+    #   size=8,
+    #   fontface = "bold",
+    #   show.legend = FALSE,
+    #   hide.ns = TRUE,
+    # ) +
+    facet_grid(cols=vars(Assay), rows=vars(Dilutions)) +
+    scale_y_continuous(breaks=seq(0, 48, 6)) +
+    scale_color_manual(values = c("darkblue", "maroon")) +
+    ggtitle(t) +
+    coord_flip() +
+    labs(
+      title = t,
+      y = "Time to Threshold (h)"
+    ) +
+    main_theme +
+    theme(
+      plot.title = element_text(hjust=0.5),
+      axis.title.y = element_blank()
+    )
+} 
   cutoff_figs <- lapply(unique(df_opt_dil$Tissue), cutoff_fig)
 
   cutoffs_arranged <- ggarrange(
@@ -441,40 +463,79 @@ write.csv(optimal_tissue_params, "data/top_tissue_conditions.csv", row.names = F
   )
   cutoffs_arranged
   ggsave("cutoffs.png", path="figures", width=16, height=10)
-#   ggarrange(cutoffs_arranged, pca_plot, ncol=1, labels = c("", "C"), 
-#             font.label = list(size=30), common.legend = TRUE, legend="bottom"
-#     )
-}
-# ggsave("pca_combo.png", path="figures", width=12, height=12)
 
 
 # AUC Line Graph -----------------------------------------------------------
 
-roc_aucs %>%
-  mutate(cutoff = as.numeric(as.character(cutoff))) %>%
+
+
+mean_roc_aucs <- roc_aucs %>%
+  mutate(
+    cutoff = as.numeric(as.character(cutoff)),
+    Assay = factor(Assay, levels = c("NQ", "RT"), labels = c("Nano-QuIC", "RT-QuIC"))
+  ) %>%
   summarize(
     auc = mean(auc),
     .by = c(Tissue, Assay, Dilutions, cutoff)
+  )
+
+best_cutoffs <- mean_roc_aucs %>%
+  filter(
+    auc == max(auc),
+    .by = c(Tissue, Assay, Dilutions)
   ) %>%
+  slice_min(cutoff, with_ties = FALSE, by = c(Tissue, Assay, Dilutions)) %>%
+  mutate(
+    hjust = ifelse(cutoff > 36, 1, 0),
+    offset = ifelse(cutoff > 36, cutoff - 1, cutoff + 1)
+  )
+
+mean_roc_aucs %>%
   ggplot(aes(cutoff, auc, color=Assay, fill=Assay, label=round(auc, 2))) +
-  geom_point(size=4) +
-#   geom_area(position="jitter", alpha=1) +
-  geom_line() +
-#   geom_text() +
-  facet_grid(rows=vars(round(Dilutions, 2)), cols=vars(Tissue)) +
-  scale_y_continuous(breaks=seq(0.4, 1, 0.1)) +
-  scale_x_continuous(breaks=seq(24,48,4), limits=c(24,48)) +
+  # geom_point(size=4) +
+  geom_area(position="jitter", alpha = 0.25) +
+  geom_line(linewidth=1.2, alpha = 0.25) +
+  geom_hline(
+    aes(yintercept = auc, color=Assay), 
+    data=best_cutoffs, alpha = 0.5, linetype="dashed", linewidth=1.2, show.legend = FALSE
+  ) +
+  geom_vline(
+    aes(xintercept = cutoff, color = Assay), 
+    data=best_cutoffs, alpha = 0.5, linetype="dashed", linewidth=1.2, show.legend = FALSE
+  ) +
+  geom_text_repel(
+    aes(
+      label=paste0(round(auc, 2), ", ", cutoff, "hr"), 
+      x = 25, y = auc + 0.03, hjust = 0, color = Assay
+    ), 
+    data = best_cutoffs, size = 6, fontface = 2, force = 10, direction = "y",
+    max.iter = 10000, show.legend = FALSE, inherit.aes = FALSE, point.size = NA,
+    min.segment.length = 0, bg.color = "#333", bg.r = 0.03
+  ) +
+  facet_grid(cols=vars(round(Dilutions, 2)), rows=vars(Tissue)) +
+  scale_y_continuous(breaks=seq(0, 1.1, 0.1), expand = expansion(c(-0.35, 0.05))) +
+  scale_x_continuous(breaks=seq(28,44,4), limits=c(24,48), expand = expansion(0.02)) +
+  scale_color_manual(values=c("darkorange", "purple")) +
+  scale_fill_manual(values=c("darkorange", "purple")) +
   labs(
     x = "Cutoff (hr)",
     y = "Area Under ROC Curve",
-    title = "ROC Results by Tissue"
+    title = "ROC Results by Tissue",
+    alpha = NULL
   ) +
   main_theme +
   theme(
-    legend.position = c(0.15, 0.2),
-    legend.direction = "horizontal",
+    legend.position = c(0.8, 0.8),
+    legend.direction = "vertical",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 24),
+    legend.background = element_blank(),
+    legend.key.spacing.y = unit(0.01, "npc"),
+    # legend.spacing.y = unit(10, "npc"),
     plot.title = element_text(hjust=0.5)
-  )
+  ) +
+  ## important additional element
+  guides(fill = guide_legend(byrow = TRUE))
 
 ggsave("roc_results_by_tissue.png", path="figures", width=16, height=12)
 
@@ -484,5 +545,6 @@ ggsave("roc_results_by_tissue.png", path="figures", width=16, height=12)
 
 top_all <- bind_rows(top_moose, top_reindeer, top_reddeer) %>%
   select(-y) %>%
-  filter(auc > 0.7)
+  filter(auc > 0.7) %>%
+  arrange(species, Tissue, Assay, desc(auc), cutoff)
 write.csv(top_all, "data/top_all.csv", row.names=FALSE)
