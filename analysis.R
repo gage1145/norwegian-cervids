@@ -7,6 +7,7 @@ library(scales)
 library(ggpubr)
 library(patchwork)
 library(ggrepel)
+library(skimr)
 
 main_theme <- theme(
 	plot.title = element_text(size=30),
@@ -117,26 +118,35 @@ write.csv(df_long, "data/pca.csv")
 pca_plot <- df_long %>%
   # filter(Tissue != "skin") %>%
   mutate(
+    # pc1 = log(rescale(-pc1, c(0.01, 1))),
+    pc1 = log(-pc1 + abs(min(-pc1)) + 1),
     ELISA = ifelse(ELISA, "Positive", "Negative"),
     Tissue = ifelse(Tissue == "skin", "SK", Tissue),
     cutoff = paste(cutoff, "hr")
   ) %>%
-  ggplot(aes(pc1, pc2, color = ELISA)) +
-  geom_hline(yintercept = 0, linetype = "dashed") +
-  geom_vline(xintercept = 0, linetype = "dashed") +
-  geom_point(alpha = 0.5) +
-  scale_color_manual(values = c("darkblue", "maroon")) +
+  ggplot(aes(Dilutions, pc1, color = ELISA)) +
+  # geom_hline(yintercept = 0, linetype = "dashed") +
+  # geom_vline(xintercept = 0, linetype = "dashed") +
+  geom_point(alpha = 0.1, position = position_jitter(0.2)) +
+  scale_color_manual(values = c("navy", "red")) +
+  guides(color = guide_legend(override.aes = list(alpha = 1))) +
+  # scale_y_log10() +
   facet_grid(cols = vars(cutoff), rows = vars(Tissue)) +
   # coord_fixed() +
-  ggtitle("Principal Component Analysis") +
+  labs(
+    x = "Log Dilution Factors",
+    y = sprintf("Log(pc1 + %s)", round(abs(min(-df_long$pc1)) + 1, 2))
+  ) +
+  # ggtitle("Principal Component Analysis") +
   main_theme +
   theme(
     plot.title = element_text(hjust=0.5),
-    legend.position = "bottom",
-    legend.text=element_text(size=12)
+    legend.position = "top",
+    legend.text=element_text(size=20),
+    axis.text = element_text(size = 16)
   )
 pca_plot
-ggsave("pca.png", path = "figures", height=6, width = 12)
+ggsave("pca.png", path = "figures", height=10, width = 12)
 
 ggarrange(cor_plot, pca_plot, ncol=2, align="h", widths=c(2, 5))
 ggsave("cor_pca_combo.png", path="figures", width=16, height=12)
@@ -538,6 +548,99 @@ mean_roc_aucs %>%
   guides(fill = guide_legend(byrow = TRUE))
 
 ggsave("roc_results_by_tissue.png", path="figures", width=16, height=12)
+
+
+
+# Cutoff vs. Dilution ----------------------------------------------------
+
+
+top_conditions <- read.csv("data/top_conditions.csv") %>%
+  slice_max(Dilutions, by = c(species, Tissue, Assay))
+
+all_aucs <- read.csv("data/aucs.csv") 
+
+
+df_pca <- read.csv("data/pca.csv") %>%
+  mutate(
+    Tissue = ifelse(str_detect(Tissue, "SK"), "skin", Tissue),
+    RAF = ifelse(crossed, RAF, 0)
+  ) 
+
+
+df_top <- df_pca %>%
+  right_join(top_conditions) 
+
+df_all_aucs <- df_pca %>%
+  right_join(all_aucs)
+
+# All
+df_top %>%
+  # filter(Tissue == "BR" & Dilutions > -6) %>%
+  ggplot(aes(ELISA, RAF, fill = Assay, color=Assay)) +
+  # geom_point(alpha=0.5, size=1.2, position=position_jitter(0.1))  +
+  geom_boxplot(aes(outlier.color = ELISA), color="black") +
+  # stat_compare_means(label.y.npc = 0.9)+
+  # stat_compare_means(aes(label = after_stat(p.signif)),
+  #                   method = "wilcox.test", label.y = 5, size = 7) +
+  # facet_grid(rows=vars(Tissue)) +
+
+  facet_grid(rows=vars(Tissue), cols=(vars(species))) +
+  geom_label(aes(y = 0.3, label=paste0("Cutoff = ", cutoff, "\nDilution = ", round(Dilutions, 2), "\nAUC = ", round(auc, 3))), fill="white", color="black", inherit.aes = TRUE) +
+  scale_y_continuous(limits = c(0, 0.4)) +
+  labs(
+    title = "Comparisons of RAF at Optimal Conditions"
+  )
+
+df_rect <- expand.grid(
+  Tissue = sort(unique(all_aucs$Tissue)),
+  Dilutions = sort(unique(all_aucs$Dilutions))
+) %>%
+  mutate(
+    w_next = abs((Dilutions - lag(Dilutions)) / 2),
+    w_prev = abs((Dilutions - lead(Dilutions)) / 2),
+    dmin = Dilutions - w_next,
+    dmax = Dilutions + w_prev,
+    dmin = ifelse(is.na(dmin), Dilutions - w_prev, dmin),
+    dmax = ifelse(is.na(dmax), Dilutions + w_next, dmax),
+    .by = Tissue
+  ) 
+
+dilution_factors <- round(sort(unique(all_aucs$Dilutions)), 2)
+
+all_aucs %>%
+  summarize(
+    auc = mean(auc),
+    .by = c(Dilutions, Assay, Tissue, cutoff)
+  ) %>%
+  left_join(df_rect) %>%
+  mutate(
+    auc_lab = ifelse(auc >= 0.75, str_remove(as.character(round(auc, 2)), "0"), NA),
+    auc_lab_position = (dmin + dmax) / 2
+  ) %>%
+  ggplot(aes(Dilutions, cutoff, z=auc, fill=auc, group=auc)) +
+  geom_rect(aes(xmin=dmin, xmax = dmax, ymin = cutoff - 2, ymax = cutoff + 2)) +
+  geom_text(aes(label = auc_lab, x = auc_lab_position), color="white", size = 6) +
+  labs(
+    x = "Log Dilution Factor",
+    y = "Cutoff Time (hr)",
+    fill = "AUC of ROC"
+  ) +
+  facet_grid(Tissue ~ Assay) +
+  scale_fill_gradient2(
+    low="red", mid="lightgreen", high="navy", midpoint=mean(all_aucs$auc), 
+    breaks=seq(0.4, 1, 0.1), limits = c(0.38, 1.01)
+  ) +
+  scale_x_continuous(breaks = sort(unique(dilution_factors))) +
+  scale_y_continuous(breaks = seq(24, 48, 4)) +
+  main_theme +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+    legend.position = "top",
+    legend.title = element_text(margin = margin(r = 20)),
+    legend.key.width = unit(1, "in")
+  )
+
+ggsave("cutoff_vs_dilution.png", path="figures", width=16, height=16)
 
 
 # Tables --------------------------------------------------------------------
