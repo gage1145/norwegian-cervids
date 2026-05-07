@@ -259,12 +259,13 @@ roc_plot_specs <- tibble(
   tissues = list(c("Brain", "Lymph Node"), c("Brain", "Lymph Node"), c("Brain", "Lymph Node"), "Skin"),
   fct_row = c("tissue", "tissue", "tissue", "species"),
   file    = c("moose_roc.png", "reindeer_roc.png", "reddeer_roc.png", "skin_roc.png"),
+  height  = c(10, 10, 10, 10),
   width   = c(16, 16, 16, 20)
 )
 
-pwalk(roc_plot_specs, function(spec, tissues, fct_row, file, width) {
+pwalk(roc_plot_specs, function(spec, tissues, fct_row, file, height, width) {
   p <- make_roc_plot(roc_coords, spec = spec, tissues = tissues, fct_row = fct_row)
-  ggsave(file, plot = p, path = "figures", height = 10, width = width)
+  ggsave(file, plot = p, path = "figures", height = height, width = width)
 })
 
 
