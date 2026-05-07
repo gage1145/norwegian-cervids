@@ -1,0 +1,7 @@
+"","species","tissue","roc_auc"
+"1","Moose","Brain",0.871
+"2","Moose","Lymph Node",0.752
+"3","Red Deer","Brain",0.876
+"4","Red Deer","Lymph Node",0.575
+"5","Reindeer","Brain",0.776
+"6","Reindeer","Lymph Node",0.977
