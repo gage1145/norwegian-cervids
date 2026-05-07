@@ -24,18 +24,12 @@ elisa_colors <- c("Negative" = "navy", "Positive" = "red")
 # species/tissue/assay labels used throughout the analysis and figures.
 format_labels <- function(df) {
   df <- clean_names(df, replace = c("TtT" = "ttt"))
-  if ("species" %in% colnames(df)) {
-    species_key <- list(M = "Moose", R = "Reindeer", RD = "Red Deer")
-    df <- mutate(df, species = unlist(species_key[str_extract(species, "[A-Z]{1,2}")]))
-  }
-  if ("tissue" %in% colnames(df)) {
-    tissue_key <- list(BR = "Brain", LN = "Lymph Node", SK = "Skin", Ear = "Skin")
-    df <- mutate(df, tissue = unlist(tissue_key[str_extract(tissue, "[A-Z]{2}|Ear")]))
-  }
-  if ("assay" %in% colnames(df)) {
-    assay_key <- list(RT = "RT-QuIC", NQ = "Nano-QuIC")
-    df <- mutate(df, assay = unlist(assay_key[str_extract(assay, "[A-Z]{2}")]))
-  }
+  species_key <- c(M = "Moose", R = "Reindeer", RD = "Red Deer")
+  tissue_key <- c(BR = "Brain", LN = "Lymph Node", SK = "Skin", Ear = "Skin")
+  assay_key <- c(RT = "RT-QuIC", NQ = "Nano-QuIC")
+  if ("species" %in% colnames(df)) df <- mutate(df, species = species_key[str_extract(species, "[A-Z]{1,2}")])
+  if ("tissue" %in% colnames(df)) df <- mutate(df, tissue = tissue_key[str_extract(tissue, "[A-Z]{2}|Ear")])
+  if ("assay" %in% colnames(df)) df <- mutate(df, assay = assay_key[str_extract(assay, "[A-Z]{2}")])
   mutate(df, across(where(is.character), trimws))
 }
 
