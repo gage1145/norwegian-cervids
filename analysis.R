@@ -7,9 +7,10 @@ library(janitor)
 
 # Setup ------------------------------------------------------------------
 
+for_manuscript <- TRUE
 
 main_theme <- theme(
-  plot.title = element_text(size = 30),
+  plot.title = element_text(size = 30, hjust=0.5),
   axis.title = element_text(size = 24),
   axis.text = element_text(size = 20),
   legend.title = element_text(size = 24),
@@ -431,16 +432,104 @@ roc_aucs %>%
   ) +
   scale_x_continuous(breaks = sort(unique(dilution_factors))) +
   scale_y_continuous(breaks = seq(24, 48, 4)) +
+  {if (for_manuscript) ggtitle("Area Under ROC Curve Heatmap") else .} +
+  labs(
+    fill = ifelse(for_manuscript, "AUC", "AUC of ROC")
+  ) +
   main_theme +
   theme(
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-    legend.position = "top",
+    legend.position = ifelse(for_manuscript, "right", "top"),
     legend.title = element_text(margin = margin(r = 20)),
-    legend.key.width = unit(1, "in")
-  )
+    legend.key.width =  unit(ifelse(for_manuscript, 0.5, 1), "in"))
+  
 
-ggsave("cutoff_vs_dilution.png", path = "figures", width = 16, height = 16)
+ggsave(
+  sprintf("cutoff_vs_dilution%s.png", ifelse(for_manuscript, "_manuscript", "")), 
+  path = "figures", width = 16, height = 16
+)
 
+
+
+# RAF Graphs -------------------------------------------------------------
+
+
+make_boxplot <- function(data, y, t, dil = -3) {
+  cutoffs <- roc_aucs %>%
+  filter(tissue == t) %>%
+  summarize(.by=c(species, assay, dilutions, cutoff)) %>%
+  filter(dilutions == dil) %>%
+  slice_min(cutoff, with_ties = FALSE, by = c(species, assay)) %>%
+  select(-dilutions)
+  
+  data %>%
+    mutate(raf = ifelse(crossed, raf, 0)) %>%
+    right_join(cutoffs) %>%
+    filter(tissue == t, dilutions > -5) %>% 
+    mutate(
+      pc1 = -pc1,
+      species = str_remove_all(species, " "),
+      elisa = ifelse(elisa, "Positive", "Negative"),
+      dilutions = paste0("10^", dilutions)
+    ) %>%
+    ggplot(aes(elisa, .data[[y]], fill = assay)) +
+    geom_boxplot() +
+    stat_compare_means(
+      method = "wilcox.test",
+      label = "p.signif",
+      label.y.npc = 0.8,
+      tip.length = 0.01,
+      size = 10,
+      fontface = "bold",
+      show.legend = FALSE,
+      hide.ns = TRUE
+    ) +
+    facet_grid(rows = vars(dilutions), cols=vars(species), scale = "free_x", labeller=label_parsed) +
+    # scale_y_continuous(limits = c(0, 0.3)) +
+    scale_fill_manual(values = quic_colors) +
+    ggtitle(str_wrap(sprintf("RT-QuIC vs Nano-QuIC %s %s", t, toupper(y)), width = 40)) +
+    labs(
+      y = ifelse(y == "raf", "Rate of amyloid formation (1/h)", "PC1")
+    ) +
+    main_theme +
+    theme(
+      axis.title.x = element_blank(),
+      legend.title = element_blank(),
+      legend.position = "bottom"
+    )
+}
+
+## Brain RAF Boxplot ---------------------------------------------------------
+make_boxplot(df_clean, "raf", "Brain", -3)
+ggsave("brain_bp.v3.png", path="figures/raf", width = 12, height = 10)
+
+
+## Lymph RAF Node Boxplot ----------------------------------------------------
+make_boxplot(df_clean, "raf", "Lymph Node", -3)
+ggsave("lymph_bp.v3.png", path="figures/raf", width = 12, height = 10)
+
+## Skin RAF Boxplot ----------------------------------------------------------
+dils <- sort(unique(df_clean$dilutions))
+df_clean %>%
+  filter(dilutions > -4) %>%
+  make_boxplot("raf", "Skin", -1.3)
+ggsave("skin_bp.v3.png", path="figures/raf", width = 12, height = 10)
+
+## Brain PCA Boxplot ---------------------------------------------------------
+make_boxplot(df_clean, "pc1", "Brain", -3)
+ggsave("brain_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+
+
+## Lymph PCA Node Boxplot ----------------------------------------------------
+make_boxplot(df_clean, "pc1", "Lymph Node", -3)
+ggsave("lymph_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+
+## Skin PCA Boxplot ----------------------------------------------------------
+dils <- sort(unique(df_clean$dilutions))
+df_clean %>%
+  filter(dilutions > -4) %>%
+  make_boxplot("pc1", "Skin", -1.3)
+ggsave("skin_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 # Tables --------------------------------------------------------------------
 
