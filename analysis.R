@@ -1,13 +1,7 @@
 library(tidyverse)
 library(pROC)
-library(lme4)
-library(emmeans)
-library(broom)
-library(scales)
 library(ggpubr)
-library(patchwork)
 library(ggrepel)
-library(skimr)
 library(janitor)
 
 
