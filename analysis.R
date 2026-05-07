@@ -113,7 +113,7 @@ pca_plot <- df_clean %>%
   ) %>%
   ggplot(aes(dilutions, pc1, color = elisa)) +
   geom_point(alpha = 0.1, position = position_jitter(0.2)) +
-  scale_color_manual(values = c("navy", "red")) +
+  scale_color_manual(values = elisa_colors) +
   guides(color = guide_legend(override.aes = list(alpha = 1))) +
   facet_grid(cols = vars(cutoff), rows = vars(tissue)) +
   labs(
@@ -299,12 +299,13 @@ df_opt_dil <- df_clean %>%
 cutoff_fig <- function(t) {
   df_opt_dil %>%
     filter(cutoff == 48, tissue == t) %>%
+    mutate(elisa = ifelse(elisa, "Positive", "Negative")) %>%
     ggplot(aes(species, ttt, color = elisa)) +
     geom_point(position = position_jitter(0.2), size = 2, alpha = 0.7) +
     geom_hline(yintercept = 32, linetype = "dashed") +
     facet_grid(cols = vars(assay), rows = vars(dilutions)) +
     scale_y_continuous(breaks = seq(0, 48, 6)) +
-    scale_color_manual(values = c("darkblue", "maroon")) +
+    scale_color_manual(values = elisa_colors) +
     ggtitle(t) +
     coord_flip() +
     labs(
