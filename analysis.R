@@ -17,7 +17,8 @@ main_theme <- theme(
   strip.text = element_text(size = 24)
 )
 
-quic_colors <- c("Nano-QuIC" = "darkorange", "RT-QuIC" = "purple")
+quic_colors  <- c("Nano-QuIC" = "darkorange", "RT-QuIC" = "purple")
+elisa_colors <- c("Negative" = "navy", "Positive" = "red")
 
 # Expand the short codes used in raw filenames/sample IDs into the human-readable
 # species/tissue/assay labels used throughout the analysis and figures.
@@ -62,7 +63,6 @@ colnames(metric_combos) <- c("x", "y")
 make_cor_plot <- function(x, y) {
   df_clean %>%
     filter(cutoff == 48) %>%
-    mutate(cutoff = paste(cutoff, "hr")) %>%
     ggplot(aes(x = .data[[x]], y = .data[[y]])) +
     geom_point(color = "purple", alpha = 0.2) +
     stat_smooth(method = "lm", color = "darkorange") +
@@ -70,16 +70,11 @@ make_cor_plot <- function(x, y) {
       aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~','~")),
       label.y.npc = 1, size = 6
     ) +
-    scale_color_gradient(low = "navy", high = "darkorange") +
     labs(
       x = toupper(x),
       y = toupper(y)
     ) +
-    main_theme +
-    theme(
-      legend.position = "bottom",
-      legend.text = element_text(size = 12)
-    )
+    main_theme
 }
 
 cor_plots <- pmap(metric_combos, make_cor_plot)
