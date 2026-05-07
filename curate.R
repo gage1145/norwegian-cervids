@@ -20,7 +20,7 @@ get_raw <- function(file) {
   return(data)
 }
 
-df_ <- map_dfr(files, get_raw, .progress=TRUE)
+df_ <- map_dfr(files, get_raw, .progress = TRUE)
 
 df_formatted <- df_ %>%
   separate(`Sample IDs`, c("Assay", "Animal", "Tissue", "Dilutions"), "-", extra = "merge", fill = "right")
@@ -52,7 +52,7 @@ df_clean <- df_metrics %>%
   ) %>%
   mutate(
     # Multiply by 10 to account for Peter C's dilution nomenclature.
-    Dilutions = -log10(as.numeric(Dilutions) * 10), 
+    Dilutions = -log10(as.numeric(Dilutions) * 10),
     animal_id = str_match(Animal, "\\d+$"),
     species = str_match(Animal, "^[[:alpha:]]+")
   ) %>%

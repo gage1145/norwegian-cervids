@@ -81,7 +81,7 @@ read_csv("data/top_tissue_conditions.csv", show_col_types = FALSE) %>%
     caption = "Top-performing condition for each tissue/assay, averaged across species."
   ) %>%
   kable_styling(bootstrap_options = c("striped", "hover"), full_width = FALSE) %>%
-  collapse_rows(1, valign="middle")
+  collapse_rows(1, valign = "middle")
 ```
 
 ### All top conditions per species/tissue (AUC > 0.7)
@@ -98,7 +98,7 @@ read_csv("data/top_all.csv", show_col_types = FALSE) %>%
     caption = "All species × tissue × assay × dilution combinations with AUC > 0.7, sorted by performance."
   ) %>%
   kable_styling(bootstrap_options = c("none"), full_width = FALSE) %>%
-  collapse_rows(1:3, valign="middle")
+  collapse_rows(1:3, valign = "middle")
 ```
 
 ## Takeaways
@@ -116,9 +116,9 @@ top_conditions <- read.csv("data/top_conditions.csv") %>%
   # mutate(Dilutions = as.numeric(as.character(Dilutions))) %>%
   slice_max(Dilutions, by = c(species, Tissue, Assay))
 
-all_aucs <- read.csv("data/aucs.csv") 
-  # mutate(Dilutions = as.numeric(str_remove(Dilutions, "10\\^"))) 
-  # slice_max(Dilutions, by = c(species, Tissue, Assay))
+all_aucs <- read.csv("data/aucs.csv")
+# mutate(Dilutions = as.numeric(str_remove(Dilutions, "10\\^")))
+# slice_max(Dilutions, by = c(species, Tissue, Assay))
 
 
 df_pca <- read.csv("data/pca.csv") %>%
@@ -126,12 +126,12 @@ df_pca <- read.csv("data/pca.csv") %>%
     # Dilutions = as.numeric(as.character(Dilutions)),
     Tissue = ifelse(str_detect(Tissue, "SK"), "skin", Tissue),
     RAF = ifelse(crossed, RAF, 0)
-  ) 
+  )
 
 
 df_top <- df_pca %>%
-  right_join(top_conditions) 
-  # right_join(select(top_conditions, -Dilutions))
+  right_join(top_conditions)
+# right_join(select(top_conditions, -Dilutions))
 
 df_all_aucs <- df_pca %>%
   right_join(all_aucs)
@@ -139,16 +139,16 @@ df_all_aucs <- df_pca %>%
 # All
 df_top %>%
   # filter(Tissue == "BR" & Dilutions > -6) %>%
-  ggplot(aes(ELISA, RAF, fill = Assay, color=Assay)) +
+  ggplot(aes(ELISA, RAF, fill = Assay, color = Assay)) +
   # geom_point(alpha=0.5, size=1.2, position=position_jitter(0.1))  +
-  geom_boxplot(aes(outlier.color = ELISA), color="black") +
+  geom_boxplot(aes(outlier.color = ELISA), color = "black") +
   # stat_compare_means(label.y.npc = 0.9)+
   # stat_compare_means(aes(label = after_stat(p.signif)),
   #                   method = "wilcox.test", label.y = 5, size = 7) +
   # facet_grid(rows=vars(Tissue)) +
 
-  facet_grid(rows=vars(Tissue), cols=(vars(species))) +
-  geom_label(aes(y = 0.3, label=paste0("Cutoff = ", cutoff, "\nDilution = ", round(Dilutions, 2), "\nAUC = ", round(auc, 3))), fill="white", color="black", inherit.aes = TRUE) +
+  facet_grid(rows = vars(Tissue), cols = (vars(species))) +
+  geom_label(aes(y = 0.3, label = paste0("Cutoff = ", cutoff, "\nDilution = ", round(Dilutions, 2), "\nAUC = ", round(auc, 3))), fill = "white", color = "black", inherit.aes = TRUE) +
   scale_y_continuous(limits = c(0, 0.4)) +
   labs(
     title = "Comparisons of RAF at Optimal Conditions"
@@ -166,7 +166,7 @@ df_rect <- expand.grid(
     dmin = ifelse(is.na(dmin), Dilutions - w_prev, dmin),
     dmax = ifelse(is.na(dmax), Dilutions + w_next, dmax),
     .by = Tissue
-  ) 
+  )
 
 all_aucs %>%
   summarize(
@@ -174,13 +174,13 @@ all_aucs %>%
     .by = c(Dilutions, Assay, Tissue, cutoff)
   ) %>%
   left_join(df_rect) %>%
-  ggplot(aes(Dilutions, cutoff, z=auc, fill=auc, group=auc)) +
-  geom_rect(aes(xmin=dmin, xmax = dmax, ymin = cutoff, ymax = cutoff + 4)) +
+  ggplot(aes(Dilutions, cutoff, z = auc, fill = auc, group = auc)) +
+  geom_rect(aes(xmin = dmin, xmax = dmax, ymin = cutoff, ymax = cutoff + 4)) +
   # geom_bin_2d(breaks = list(bins_x, bins_y), center=0.5) +
   # geom_text(aes(label = round(auc, 2)), color="white", hjust=0, vjust=0) +
   # geom_count() +
   # geom_line() +
   facet_grid(Tissue ~ Assay) +
-  scale_fill_gradient2(low="red", mid="lightgreen", high="navy", midpoint=mean(all_aucs$auc)) +
+  scale_fill_gradient2(low = "red", mid = "lightgreen", high = "navy", midpoint = mean(all_aucs$auc)) +
   scale_y_continuous(breaks = seq(24, 48, 4))
 ```
