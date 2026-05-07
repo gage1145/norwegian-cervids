@@ -138,7 +138,7 @@ ggsave("pca.png", path = "figures", height = 10, width = 12)
 ## Compute ROC objects ---------------------------------------------------
 
 
-distinct_combos <- summarize(df_clean, .by = c(species, tissue, assay, dilutions, cutoff))
+distinct_combos <- distinct(df_clean, species, tissue, assay, dilutions, cutoff)
 
 # Fit one ROC curve per (species, tissue, assay, dilution, cutoff) cell.
 # direction = ">" tells pROC that lower pc1 = ELISA positive (since pc1 was
@@ -199,12 +199,7 @@ roc_coords <- map_dfr(roc_list, get_roc_info) %>%
 
 roc_aucs <- roc_coords %>%
   distinct(species, tissue, assay, dilutions, cutoff, roc_auc) %>%
-  mutate(
-    roc_auc = round(roc_auc, 3),
-    # y is the vertical position used by the AUC label inside ROC plots —
-    # offset per-assay so the two labels don't overlap.
-    y = ifelse(assay == "Nano-QuIC", 0.25, 0.1)
-  )
+  mutate(roc_auc = round(roc_auc, 3))
 
 write.csv(roc_aucs, "data/aucs.csv")
 
@@ -233,8 +228,11 @@ make_roc_plot <- function(x, spec = NULL, tissues = NULL, fct_col = "dilutions",
     top_filtered <- filter(top_filtered, tissue %in% tissues)
   }
 
+  # Stagger the per-assay AUC labels vertically so they don't overlap.
+  top_filtered <- mutate(top_filtered, y = ifelse(assay == "Nano-QuIC", 0.25, 0.1))
+
   filtered %>%
-    inner_join(select(top_filtered, -roc_auc)) %>%
+    inner_join(top_filtered %>% select(-roc_auc, -y)) %>%
     ggplot(aes(specificity, sensitivity, color = assay, group = assay)) +
     geom_step(linewidth = 1.2) +
     geom_abline(
@@ -342,11 +340,7 @@ best_cutoffs <- mean_roc_aucs %>%
     roc_auc == max(roc_auc),
     .by = c(tissue, assay, dilutions)
   ) %>%
-  slice_min(cutoff, with_ties = FALSE, by = c(tissue, assay, dilutions)) %>%
-  mutate(
-    hjust = ifelse(cutoff > 36, 1, 0),
-    offset = ifelse(cutoff > 36, cutoff - 1, cutoff + 1)
-  )
+  slice_min(cutoff, with_ties = FALSE, by = c(tissue, assay, dilutions))
 
 mean_roc_aucs %>%
   ggplot(aes(cutoff, roc_auc, color = assay, fill = assay, label = round(roc_auc, 2))) +
@@ -457,7 +451,6 @@ ggsave("cutoff_vs_dilution.png", path = "figures", width = 16, height = 16)
 
 
 top_all <- top_combos %>%
-  select(-y) %>%
   filter(roc_auc > 0.7) %>%
   arrange(species, tissue, assay, desc(roc_auc), cutoff)
 write.csv(top_all, "data/top_all.csv", row.names = FALSE)
