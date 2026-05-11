@@ -161,6 +161,7 @@ df_clean %>%
     legend.title = element_blank(),
     legend.position = "top"
   )
+ggsave("580_RFU.png", path = "figures/mnquic", height = 10, width = 16)
 
 df_clean %>%
   mutate(elisa = as.integer(elisa)) %>%
@@ -170,6 +171,7 @@ df_clean %>%
     method.args = list(family = "binomial"), 
     se = T) +
   facet_grid(cols = vars(species), rows = vars(tissue)) 
+ggsave("logistic_curve.png", path = "figures/mnquic", height = 10, width = 16)
 
 
 # ROC Figure
@@ -200,4 +202,4 @@ ggplot(aes(specificity, sensitivity)) +
     legend.position = "none",
     legend.title = element_blank(),
   )
-ggsave("mnquic_roc.png", path = "figures", height = 10, width = 16)
+ggsave("mnquic_roc.png", path = "figures/mnquic", height = 10, width = 16)
