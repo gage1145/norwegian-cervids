@@ -1,14 +1,14 @@
 "species","tissue","assay","dilutions","cutoff","roc_auc"
-"Moose","Brain","Nano-QuIC",-4,24,1
-"Moose","Brain","Nano-QuIC",-3,24,1
-"Moose","Brain","Nano-QuIC",-5,44,0.917
-"Moose","Brain","Nano-QuIC",-2,32,0.894
-"Moose","Brain","RT-QuIC",-4,36,1
-"Moose","Brain","RT-QuIC",-3,44,0.998
-"Moose","Brain","RT-QuIC",-5,48,0.92
-"Moose","Brain","RT-QuIC",-2,48,0.703
+"Moose","Brainstem","Nano-QuIC",-4,24,1
+"Moose","Brainstem","Nano-QuIC",-3,24,1
+"Moose","Brainstem","Nano-QuIC",-5,44,0.917
+"Moose","Brainstem","Nano-QuIC",-2,32,0.894
+"Moose","Brainstem","RT-QuIC",-4,36,1
+"Moose","Brainstem","RT-QuIC",-3,44,0.998
+"Moose","Brainstem","RT-QuIC",-5,48,0.92
+"Moose","Brainstem","RT-QuIC",-2,48,0.703
+"Moose","Lymph Node","Nano-QuIC",-2,24,0.73
 "Moose","Lymph Node","Nano-QuIC",-4,36,0.73
-"Moose","Lymph Node","Nano-QuIC",-2,24,0.729
 "Moose","Lymph Node","Nano-QuIC",-3,24,0.715
 "Moose","Lymph Node","RT-QuIC",-2,28,0.744
 "Moose","Lymph Node","RT-QuIC",-3,44,0.73
@@ -16,22 +16,23 @@
 "Moose","Skin","Nano-QuIC",-2,44,0.868
 "Moose","Skin","Nano-QuIC",-5,24,0.861
 "Moose","Skin","Nano-QuIC",-4,24,0.847
-"Moose","Skin","Nano-QuIC",-1.78,24,0.832
+"Moose","Skin","Nano-QuIC",-1.78,24,0.836
 "Moose","Skin","Nano-QuIC",-1.3,24,0.826
-"Moose","Skin","Nano-QuIC",-3,36,0.812
+"Moose","Skin","Nano-QuIC",-3,48,0.812
 "Moose","Skin","RT-QuIC",-1.6,48,0.974
 "Moose","Skin","RT-QuIC",-1.78,24,0.967
 "Moose","Skin","RT-QuIC",-2,44,0.951
 "Moose","Skin","RT-QuIC",-1.3,48,0.941
 "Moose","Skin","RT-QuIC",-3,24,0.833
 "Moose","Skin","RT-QuIC",-4,28,0.826
-"Red Deer","Brain","Nano-QuIC",-2,24,1
-"Red Deer","Brain","Nano-QuIC",-3,28,0.906
-"Red Deer","Brain","Nano-QuIC",-4,28,0.812
-"Red Deer","Brain","RT-QuIC",-2,24,0.906
-"Red Deer","Brain","RT-QuIC",-4,44,0.875
-"Red Deer","Brain","RT-QuIC",-3,44,0.875
-"Red Deer","Brain","RT-QuIC",-5,24,0.719
+"Red Deer","Brainstem","Nano-QuIC",-2,40,1
+"Red Deer","Brainstem","Nano-QuIC",-3,40,0.953
+"Red Deer","Brainstem","Nano-QuIC",-4,28,0.844
+"Red Deer","Brainstem","Nano-QuIC",-5,28,0.742
+"Red Deer","Brainstem","RT-QuIC",-4,44,0.938
+"Red Deer","Brainstem","RT-QuIC",-3,24,0.898
+"Red Deer","Brainstem","RT-QuIC",-5,24,0.758
+"Red Deer","Brainstem","RT-QuIC",-2,24,0.719
 "Red Deer","Lymph Node","Nano-QuIC",-2,40,0.875
 "Red Deer","Lymph Node","RT-QuIC",-4,48,0.719
 "Red Deer","Skin","Nano-QuIC",-1.3,48,0.896
@@ -42,15 +43,15 @@
 "Red Deer","Skin","RT-QuIC",-1.6,48,0.781
 "Red Deer","Skin","RT-QuIC",-3,32,0.737
 "Red Deer","Skin","RT-QuIC",-4,48,0.734
-"Reindeer","Brain","Nano-QuIC",-3,28,0.952
-"Reindeer","Brain","Nano-QuIC",-2,48,0.944
-"Reindeer","Brain","RT-QuIC",-4,44,0.856
-"Reindeer","Brain","RT-QuIC",-3,36,0.854
+"Reindeer","Brainstem","Nano-QuIC",-3,28,0.952
+"Reindeer","Brainstem","Nano-QuIC",-2,48,0.944
+"Reindeer","Brainstem","RT-QuIC",-4,44,0.856
+"Reindeer","Brainstem","RT-QuIC",-3,36,0.854
 "Reindeer","Lymph Node","Nano-QuIC",-3,32,1
 "Reindeer","Lymph Node","Nano-QuIC",-2,28,0.958
 "Reindeer","Lymph Node","Nano-QuIC",-4,48,0.917
 "Reindeer","Lymph Node","Nano-QuIC",-5,44,0.867
 "Reindeer","Lymph Node","RT-QuIC",-3,24,1
 "Reindeer","Lymph Node","RT-QuIC",-4,32,1
-"Reindeer","Lymph Node","RT-QuIC",-5,44,0.84
-"Reindeer","Lymph Node","RT-QuIC",-2,48,0.725
+"Reindeer","Lymph Node","RT-QuIC",-5,44,0.842
+"Reindeer","Lymph Node","RT-QuIC",-2,48,0.723

@@ -1,68 +1,68 @@
 "","species","tissue","assay","dilutions","cutoff","roc_auc"
-"1","Moose","Brain","Nano-QuIC",-5,24,0.833
-"2","Moose","Brain","Nano-QuIC",-5,28,0.833
-"3","Moose","Brain","Nano-QuIC",-5,32,0.852
-"4","Moose","Brain","Nano-QuIC",-5,36,0.87
-"5","Moose","Brain","Nano-QuIC",-5,40,0.87
-"6","Moose","Brain","Nano-QuIC",-5,44,0.917
-"7","Moose","Brain","Nano-QuIC",-5,48,0.917
-"8","Moose","Brain","Nano-QuIC",-4,24,1
-"9","Moose","Brain","Nano-QuIC",-4,28,1
-"10","Moose","Brain","Nano-QuIC",-4,32,1
-"11","Moose","Brain","Nano-QuIC",-4,36,1
-"12","Moose","Brain","Nano-QuIC",-4,40,1
-"13","Moose","Brain","Nano-QuIC",-4,44,1
-"14","Moose","Brain","Nano-QuIC",-4,48,1
-"15","Moose","Brain","Nano-QuIC",-3,24,1
-"16","Moose","Brain","Nano-QuIC",-3,28,1
-"17","Moose","Brain","Nano-QuIC",-3,32,0.984
-"18","Moose","Brain","Nano-QuIC",-3,36,0.973
-"19","Moose","Brain","Nano-QuIC",-3,40,0.957
-"20","Moose","Brain","Nano-QuIC",-3,44,0.95
-"21","Moose","Brain","Nano-QuIC",-3,48,0.943
-"22","Moose","Brain","Nano-QuIC",-2,24,0.877
-"23","Moose","Brain","Nano-QuIC",-2,28,0.889
-"24","Moose","Brain","Nano-QuIC",-2,32,0.894
-"25","Moose","Brain","Nano-QuIC",-2,36,0.892
-"26","Moose","Brain","Nano-QuIC",-2,40,0.891
-"27","Moose","Brain","Nano-QuIC",-2,44,0.889
-"28","Moose","Brain","Nano-QuIC",-2,48,0.889
-"29","Moose","Brain","RT-QuIC",-5,24,0.855
-"30","Moose","Brain","RT-QuIC",-5,28,0.854
-"31","Moose","Brain","RT-QuIC",-5,32,0.859
-"32","Moose","Brain","RT-QuIC",-5,36,0.872
-"33","Moose","Brain","RT-QuIC",-5,40,0.888
-"34","Moose","Brain","RT-QuIC",-5,44,0.891
-"35","Moose","Brain","RT-QuIC",-5,48,0.92
-"36","Moose","Brain","RT-QuIC",-4,24,0.944
-"37","Moose","Brain","RT-QuIC",-4,28,0.944
-"38","Moose","Brain","RT-QuIC",-4,32,0.944
-"39","Moose","Brain","RT-QuIC",-4,36,1
-"40","Moose","Brain","RT-QuIC",-4,40,1
-"41","Moose","Brain","RT-QuIC",-4,44,0.995
-"42","Moose","Brain","RT-QuIC",-4,48,0.995
-"43","Moose","Brain","RT-QuIC",-3,24,0.892
-"44","Moose","Brain","RT-QuIC",-3,28,0.944
-"45","Moose","Brain","RT-QuIC",-3,32,0.995
-"46","Moose","Brain","RT-QuIC",-3,36,0.995
-"47","Moose","Brain","RT-QuIC",-3,40,0.995
-"48","Moose","Brain","RT-QuIC",-3,44,0.998
-"49","Moose","Brain","RT-QuIC",-3,48,0.998
-"50","Moose","Brain","RT-QuIC",-2,24,0.669
-"51","Moose","Brain","RT-QuIC",-2,28,0.67
-"52","Moose","Brain","RT-QuIC",-2,32,0.676
-"53","Moose","Brain","RT-QuIC",-2,36,0.675
-"54","Moose","Brain","RT-QuIC",-2,40,0.678
-"55","Moose","Brain","RT-QuIC",-2,44,0.69
-"56","Moose","Brain","RT-QuIC",-2,48,0.703
+"1","Moose","Brainstem","Nano-QuIC",-5,24,0.833
+"2","Moose","Brainstem","Nano-QuIC",-5,28,0.833
+"3","Moose","Brainstem","Nano-QuIC",-5,32,0.852
+"4","Moose","Brainstem","Nano-QuIC",-5,36,0.87
+"5","Moose","Brainstem","Nano-QuIC",-5,40,0.87
+"6","Moose","Brainstem","Nano-QuIC",-5,44,0.917
+"7","Moose","Brainstem","Nano-QuIC",-5,48,0.917
+"8","Moose","Brainstem","Nano-QuIC",-4,24,1
+"9","Moose","Brainstem","Nano-QuIC",-4,28,1
+"10","Moose","Brainstem","Nano-QuIC",-4,32,1
+"11","Moose","Brainstem","Nano-QuIC",-4,36,1
+"12","Moose","Brainstem","Nano-QuIC",-4,40,1
+"13","Moose","Brainstem","Nano-QuIC",-4,44,1
+"14","Moose","Brainstem","Nano-QuIC",-4,48,1
+"15","Moose","Brainstem","Nano-QuIC",-3,24,1
+"16","Moose","Brainstem","Nano-QuIC",-3,28,1
+"17","Moose","Brainstem","Nano-QuIC",-3,32,0.984
+"18","Moose","Brainstem","Nano-QuIC",-3,36,0.973
+"19","Moose","Brainstem","Nano-QuIC",-3,40,0.957
+"20","Moose","Brainstem","Nano-QuIC",-3,44,0.95
+"21","Moose","Brainstem","Nano-QuIC",-3,48,0.943
+"22","Moose","Brainstem","Nano-QuIC",-2,24,0.877
+"23","Moose","Brainstem","Nano-QuIC",-2,28,0.889
+"24","Moose","Brainstem","Nano-QuIC",-2,32,0.894
+"25","Moose","Brainstem","Nano-QuIC",-2,36,0.892
+"26","Moose","Brainstem","Nano-QuIC",-2,40,0.891
+"27","Moose","Brainstem","Nano-QuIC",-2,44,0.889
+"28","Moose","Brainstem","Nano-QuIC",-2,48,0.889
+"29","Moose","Brainstem","RT-QuIC",-5,24,0.855
+"30","Moose","Brainstem","RT-QuIC",-5,28,0.854
+"31","Moose","Brainstem","RT-QuIC",-5,32,0.859
+"32","Moose","Brainstem","RT-QuIC",-5,36,0.872
+"33","Moose","Brainstem","RT-QuIC",-5,40,0.888
+"34","Moose","Brainstem","RT-QuIC",-5,44,0.891
+"35","Moose","Brainstem","RT-QuIC",-5,48,0.92
+"36","Moose","Brainstem","RT-QuIC",-4,24,0.944
+"37","Moose","Brainstem","RT-QuIC",-4,28,0.944
+"38","Moose","Brainstem","RT-QuIC",-4,32,0.944
+"39","Moose","Brainstem","RT-QuIC",-4,36,1
+"40","Moose","Brainstem","RT-QuIC",-4,40,1
+"41","Moose","Brainstem","RT-QuIC",-4,44,0.995
+"42","Moose","Brainstem","RT-QuIC",-4,48,0.995
+"43","Moose","Brainstem","RT-QuIC",-3,24,0.892
+"44","Moose","Brainstem","RT-QuIC",-3,28,0.944
+"45","Moose","Brainstem","RT-QuIC",-3,32,0.995
+"46","Moose","Brainstem","RT-QuIC",-3,36,0.995
+"47","Moose","Brainstem","RT-QuIC",-3,40,0.995
+"48","Moose","Brainstem","RT-QuIC",-3,44,0.998
+"49","Moose","Brainstem","RT-QuIC",-3,48,0.998
+"50","Moose","Brainstem","RT-QuIC",-2,24,0.669
+"51","Moose","Brainstem","RT-QuIC",-2,28,0.671
+"52","Moose","Brainstem","RT-QuIC",-2,32,0.676
+"53","Moose","Brainstem","RT-QuIC",-2,36,0.675
+"54","Moose","Brainstem","RT-QuIC",-2,40,0.678
+"55","Moose","Brainstem","RT-QuIC",-2,44,0.691
+"56","Moose","Brainstem","RT-QuIC",-2,48,0.703
 "57","Moose","Lymph Node","Nano-QuIC",-5,24,0.639
 "58","Moose","Lymph Node","Nano-QuIC",-5,28,0.648
 "59","Moose","Lymph Node","Nano-QuIC",-5,32,0.645
 "60","Moose","Lymph Node","Nano-QuIC",-5,36,0.64
 "61","Moose","Lymph Node","Nano-QuIC",-5,40,0.64
-"62","Moose","Lymph Node","Nano-QuIC",-5,44,0.639
+"62","Moose","Lymph Node","Nano-QuIC",-5,44,0.64
 "63","Moose","Lymph Node","Nano-QuIC",-5,48,0.657
-"64","Moose","Lymph Node","Nano-QuIC",-4,24,0.7
+"64","Moose","Lymph Node","Nano-QuIC",-4,24,0.701
 "65","Moose","Lymph Node","Nano-QuIC",-4,28,0.691
 "66","Moose","Lymph Node","Nano-QuIC",-4,32,0.719
 "67","Moose","Lymph Node","Nano-QuIC",-4,36,0.73
@@ -74,11 +74,11 @@
 "73","Moose","Lymph Node","Nano-QuIC",-3,32,0.685
 "74","Moose","Lymph Node","Nano-QuIC",-3,36,0.682
 "75","Moose","Lymph Node","Nano-QuIC",-3,40,0.684
-"76","Moose","Lymph Node","Nano-QuIC",-3,44,0.698
+"76","Moose","Lymph Node","Nano-QuIC",-3,44,0.699
 "77","Moose","Lymph Node","Nano-QuIC",-3,48,0.696
-"78","Moose","Lymph Node","Nano-QuIC",-2,24,0.729
+"78","Moose","Lymph Node","Nano-QuIC",-2,24,0.73
 "79","Moose","Lymph Node","Nano-QuIC",-2,28,0.711
-"80","Moose","Lymph Node","Nano-QuIC",-2,32,0.689
+"80","Moose","Lymph Node","Nano-QuIC",-2,32,0.69
 "81","Moose","Lymph Node","Nano-QuIC",-2,36,0.705
 "82","Moose","Lymph Node","Nano-QuIC",-2,40,0.701
 "83","Moose","Lymph Node","Nano-QuIC",-2,44,0.66
@@ -86,16 +86,16 @@
 "85","Moose","Lymph Node","RT-QuIC",-5,24,0.578
 "86","Moose","Lymph Node","RT-QuIC",-5,28,0.578
 "87","Moose","Lymph Node","RT-QuIC",-5,32,0.584
-"88","Moose","Lymph Node","RT-QuIC",-5,36,0.589
+"88","Moose","Lymph Node","RT-QuIC",-5,36,0.59
 "89","Moose","Lymph Node","RT-QuIC",-5,40,0.589
-"90","Moose","Lymph Node","RT-QuIC",-5,44,0.591
-"91","Moose","Lymph Node","RT-QuIC",-5,48,0.59
+"90","Moose","Lymph Node","RT-QuIC",-5,44,0.59
+"91","Moose","Lymph Node","RT-QuIC",-5,48,0.591
 "92","Moose","Lymph Node","RT-QuIC",-4,24,0.654
 "93","Moose","Lymph Node","RT-QuIC",-4,28,0.653
 "94","Moose","Lymph Node","RT-QuIC",-4,32,0.652
-"95","Moose","Lymph Node","RT-QuIC",-4,36,0.663
+"95","Moose","Lymph Node","RT-QuIC",-4,36,0.664
 "96","Moose","Lymph Node","RT-QuIC",-4,40,0.661
-"97","Moose","Lymph Node","RT-QuIC",-4,44,0.661
+"97","Moose","Lymph Node","RT-QuIC",-4,44,0.66
 "98","Moose","Lymph Node","RT-QuIC",-4,48,0.656
 "99","Moose","Lymph Node","RT-QuIC",-3,24,0.697
 "100","Moose","Lymph Node","RT-QuIC",-3,28,0.709
@@ -128,7 +128,7 @@
 "127","Moose","Skin","Nano-QuIC",-3,24,0.788
 "128","Moose","Skin","Nano-QuIC",-3,28,0.792
 "129","Moose","Skin","Nano-QuIC",-3,32,0.799
-"130","Moose","Skin","Nano-QuIC",-3,36,0.812
+"130","Moose","Skin","Nano-QuIC",-3,36,0.809
 "131","Moose","Skin","Nano-QuIC",-3,40,0.809
 "132","Moose","Skin","Nano-QuIC",-3,44,0.806
 "133","Moose","Skin","Nano-QuIC",-3,48,0.812
@@ -139,9 +139,9 @@
 "138","Moose","Skin","Nano-QuIC",-2,40,0.826
 "139","Moose","Skin","Nano-QuIC",-2,44,0.868
 "140","Moose","Skin","Nano-QuIC",-2,48,0.861
-"141","Moose","Skin","Nano-QuIC",-1.78,24,0.832
+"141","Moose","Skin","Nano-QuIC",-1.78,24,0.836
 "142","Moose","Skin","Nano-QuIC",-1.78,28,0.832
-"143","Moose","Skin","Nano-QuIC",-1.78,32,0.812
+"143","Moose","Skin","Nano-QuIC",-1.78,32,0.816
 "144","Moose","Skin","Nano-QuIC",-1.78,36,0.826
 "145","Moose","Skin","Nano-QuIC",-1.78,40,0.822
 "146","Moose","Skin","Nano-QuIC",-1.78,44,0.819
@@ -150,7 +150,7 @@
 "149","Moose","Skin","Nano-QuIC",-1.6,28,0.862
 "150","Moose","Skin","Nano-QuIC",-1.6,32,0.868
 "151","Moose","Skin","Nano-QuIC",-1.6,36,0.865
-"152","Moose","Skin","Nano-QuIC",-1.6,40,0.849
+"152","Moose","Skin","Nano-QuIC",-1.6,40,0.852
 "153","Moose","Skin","Nano-QuIC",-1.6,44,0.852
 "154","Moose","Skin","Nano-QuIC",-1.6,48,0.849
 "155","Moose","Skin","Nano-QuIC",-1.3,24,0.826
@@ -209,62 +209,62 @@
 "208","Moose","Skin","RT-QuIC",-1.3,40,0.898
 "209","Moose","Skin","RT-QuIC",-1.3,44,0.918
 "210","Moose","Skin","RT-QuIC",-1.3,48,0.941
-"211","Red Deer","Brain","Nano-QuIC",-5,24,0.562
-"212","Red Deer","Brain","Nano-QuIC",-5,28,0.531
-"213","Red Deer","Brain","Nano-QuIC",-5,32,0.281
-"214","Red Deer","Brain","Nano-QuIC",-5,36,0.25
-"215","Red Deer","Brain","Nano-QuIC",-5,40,0.156
-"216","Red Deer","Brain","Nano-QuIC",-5,44,0.156
-"217","Red Deer","Brain","Nano-QuIC",-5,48,0.188
-"218","Red Deer","Brain","Nano-QuIC",-4,24,0.781
-"219","Red Deer","Brain","Nano-QuIC",-4,28,0.812
-"220","Red Deer","Brain","Nano-QuIC",-4,32,0.688
-"221","Red Deer","Brain","Nano-QuIC",-4,36,0.719
-"222","Red Deer","Brain","Nano-QuIC",-4,40,0.688
-"223","Red Deer","Brain","Nano-QuIC",-4,44,0.656
-"224","Red Deer","Brain","Nano-QuIC",-4,48,0.688
-"225","Red Deer","Brain","Nano-QuIC",-3,24,0.875
-"226","Red Deer","Brain","Nano-QuIC",-3,28,0.906
-"227","Red Deer","Brain","Nano-QuIC",-3,32,0.906
-"228","Red Deer","Brain","Nano-QuIC",-3,36,0.875
-"229","Red Deer","Brain","Nano-QuIC",-3,40,0.812
-"230","Red Deer","Brain","Nano-QuIC",-3,44,0.781
-"231","Red Deer","Brain","Nano-QuIC",-3,48,0.719
-"232","Red Deer","Brain","Nano-QuIC",-2,24,1
-"233","Red Deer","Brain","Nano-QuIC",-2,28,0.969
-"234","Red Deer","Brain","Nano-QuIC",-2,32,1
-"235","Red Deer","Brain","Nano-QuIC",-2,36,1
-"236","Red Deer","Brain","Nano-QuIC",-2,40,1
-"237","Red Deer","Brain","Nano-QuIC",-2,44,1
-"238","Red Deer","Brain","Nano-QuIC",-2,48,1
-"239","Red Deer","Brain","RT-QuIC",-5,24,0.719
-"240","Red Deer","Brain","RT-QuIC",-5,28,0.688
-"241","Red Deer","Brain","RT-QuIC",-5,32,0.562
-"242","Red Deer","Brain","RT-QuIC",-5,36,0.562
-"243","Red Deer","Brain","RT-QuIC",-5,40,0.562
-"244","Red Deer","Brain","RT-QuIC",-5,44,0.531
-"245","Red Deer","Brain","RT-QuIC",-5,48,0.531
-"246","Red Deer","Brain","RT-QuIC",-4,24,0.406
-"247","Red Deer","Brain","RT-QuIC",-4,28,0.688
-"248","Red Deer","Brain","RT-QuIC",-4,32,0.688
-"249","Red Deer","Brain","RT-QuIC",-4,36,0.656
-"250","Red Deer","Brain","RT-QuIC",-4,40,0.688
-"251","Red Deer","Brain","RT-QuIC",-4,44,0.875
-"252","Red Deer","Brain","RT-QuIC",-4,48,0.875
-"253","Red Deer","Brain","RT-QuIC",-3,24,0.844
-"254","Red Deer","Brain","RT-QuIC",-3,28,0.844
-"255","Red Deer","Brain","RT-QuIC",-3,32,0.844
-"256","Red Deer","Brain","RT-QuIC",-3,36,0.844
-"257","Red Deer","Brain","RT-QuIC",-3,40,0.844
-"258","Red Deer","Brain","RT-QuIC",-3,44,0.875
-"259","Red Deer","Brain","RT-QuIC",-3,48,0.875
-"260","Red Deer","Brain","RT-QuIC",-2,24,0.906
-"261","Red Deer","Brain","RT-QuIC",-2,28,0.812
-"262","Red Deer","Brain","RT-QuIC",-2,32,0.844
-"263","Red Deer","Brain","RT-QuIC",-2,36,0.812
-"264","Red Deer","Brain","RT-QuIC",-2,40,0.812
-"265","Red Deer","Brain","RT-QuIC",-2,44,0.781
-"266","Red Deer","Brain","RT-QuIC",-2,48,0.781
+"211","Red Deer","Brainstem","Nano-QuIC",-5,24,0.719
+"212","Red Deer","Brainstem","Nano-QuIC",-5,28,0.742
+"213","Red Deer","Brainstem","Nano-QuIC",-5,32,0.68
+"214","Red Deer","Brainstem","Nano-QuIC",-5,36,0.672
+"215","Red Deer","Brainstem","Nano-QuIC",-5,40,0.641
+"216","Red Deer","Brainstem","Nano-QuIC",-5,44,0.641
+"217","Red Deer","Brainstem","Nano-QuIC",-5,48,0.648
+"218","Red Deer","Brainstem","Nano-QuIC",-4,24,0.805
+"219","Red Deer","Brainstem","Nano-QuIC",-4,28,0.844
+"220","Red Deer","Brainstem","Nano-QuIC",-4,32,0.836
+"221","Red Deer","Brainstem","Nano-QuIC",-4,36,0.844
+"222","Red Deer","Brainstem","Nano-QuIC",-4,40,0.836
+"223","Red Deer","Brainstem","Nano-QuIC",-4,44,0.828
+"224","Red Deer","Brainstem","Nano-QuIC",-4,48,0.836
+"225","Red Deer","Brainstem","Nano-QuIC",-3,24,0.891
+"226","Red Deer","Brainstem","Nano-QuIC",-3,28,0.938
+"227","Red Deer","Brainstem","Nano-QuIC",-3,32,0.93
+"228","Red Deer","Brainstem","Nano-QuIC",-3,36,0.945
+"229","Red Deer","Brainstem","Nano-QuIC",-3,40,0.953
+"230","Red Deer","Brainstem","Nano-QuIC",-3,44,0.945
+"231","Red Deer","Brainstem","Nano-QuIC",-3,48,0.914
+"232","Red Deer","Brainstem","Nano-QuIC",-2,24,0.945
+"233","Red Deer","Brainstem","Nano-QuIC",-2,28,0.938
+"234","Red Deer","Brainstem","Nano-QuIC",-2,32,0.945
+"235","Red Deer","Brainstem","Nano-QuIC",-2,36,0.945
+"236","Red Deer","Brainstem","Nano-QuIC",-2,40,1
+"237","Red Deer","Brainstem","Nano-QuIC",-2,44,1
+"238","Red Deer","Brainstem","Nano-QuIC",-2,48,1
+"239","Red Deer","Brainstem","RT-QuIC",-5,24,0.758
+"240","Red Deer","Brainstem","RT-QuIC",-5,28,0.758
+"241","Red Deer","Brainstem","RT-QuIC",-5,32,0.711
+"242","Red Deer","Brainstem","RT-QuIC",-5,36,0.703
+"243","Red Deer","Brainstem","RT-QuIC",-5,40,0.703
+"244","Red Deer","Brainstem","RT-QuIC",-5,44,0.703
+"245","Red Deer","Brainstem","RT-QuIC",-5,48,0.711
+"246","Red Deer","Brainstem","RT-QuIC",-4,24,0.609
+"247","Red Deer","Brainstem","RT-QuIC",-4,28,0.82
+"248","Red Deer","Brainstem","RT-QuIC",-4,32,0.812
+"249","Red Deer","Brainstem","RT-QuIC",-4,36,0.805
+"250","Red Deer","Brainstem","RT-QuIC",-4,40,0.828
+"251","Red Deer","Brainstem","RT-QuIC",-4,44,0.938
+"252","Red Deer","Brainstem","RT-QuIC",-4,48,0.938
+"253","Red Deer","Brainstem","RT-QuIC",-3,24,0.898
+"254","Red Deer","Brainstem","RT-QuIC",-3,28,0.867
+"255","Red Deer","Brainstem","RT-QuIC",-3,32,0.867
+"256","Red Deer","Brainstem","RT-QuIC",-3,36,0.867
+"257","Red Deer","Brainstem","RT-QuIC",-3,40,0.867
+"258","Red Deer","Brainstem","RT-QuIC",-3,44,0.836
+"259","Red Deer","Brainstem","RT-QuIC",-3,48,0.836
+"260","Red Deer","Brainstem","RT-QuIC",-2,24,0.719
+"261","Red Deer","Brainstem","RT-QuIC",-2,28,0.688
+"262","Red Deer","Brainstem","RT-QuIC",-2,32,0.695
+"263","Red Deer","Brainstem","RT-QuIC",-2,36,0.656
+"264","Red Deer","Brainstem","RT-QuIC",-2,40,0.625
+"265","Red Deer","Brainstem","RT-QuIC",-2,44,0.609
+"266","Red Deer","Brainstem","RT-QuIC",-2,48,0.586
 "267","Red Deer","Lymph Node","Nano-QuIC",-5,24,0
 "268","Red Deer","Lymph Node","Nano-QuIC",-5,28,0
 "269","Red Deer","Lymph Node","Nano-QuIC",-5,32,0
@@ -375,7 +375,7 @@
 "374","Red Deer","Skin","RT-QuIC",-5,32,0.188
 "375","Red Deer","Skin","RT-QuIC",-5,36,0.188
 "376","Red Deer","Skin","RT-QuIC",-5,40,0.208
-"377","Red Deer","Skin","RT-QuIC",-5,44,0.188
+"377","Red Deer","Skin","RT-QuIC",-5,44,0.208
 "378","Red Deer","Skin","RT-QuIC",-5,48,0.208
 "379","Red Deer","Skin","RT-QuIC",-4,24,0.677
 "380","Red Deer","Skin","RT-QuIC",-4,28,0.672
@@ -419,65 +419,65 @@
 "418","Red Deer","Skin","RT-QuIC",-1.3,40,0.88
 "419","Red Deer","Skin","RT-QuIC",-1.3,44,0.891
 "420","Red Deer","Skin","RT-QuIC",-1.3,48,0.979
-"421","Reindeer","Brain","Nano-QuIC",-5,24,0.444
-"422","Reindeer","Brain","Nano-QuIC",-5,28,0.442
-"423","Reindeer","Brain","Nano-QuIC",-5,32,0.508
-"424","Reindeer","Brain","Nano-QuIC",-5,36,0.515
-"425","Reindeer","Brain","Nano-QuIC",-5,40,0.512
-"426","Reindeer","Brain","Nano-QuIC",-5,44,0.531
-"427","Reindeer","Brain","Nano-QuIC",-5,48,0.531
-"428","Reindeer","Brain","Nano-QuIC",-4,24,0.59
-"429","Reindeer","Brain","Nano-QuIC",-4,28,0.59
-"430","Reindeer","Brain","Nano-QuIC",-4,32,0.579
-"431","Reindeer","Brain","Nano-QuIC",-4,36,0.61
-"432","Reindeer","Brain","Nano-QuIC",-4,40,0.598
-"433","Reindeer","Brain","Nano-QuIC",-4,44,0.6
-"434","Reindeer","Brain","Nano-QuIC",-4,48,0.6
-"435","Reindeer","Brain","Nano-QuIC",-3,24,0.95
-"436","Reindeer","Brain","Nano-QuIC",-3,28,0.952
-"437","Reindeer","Brain","Nano-QuIC",-3,32,0.946
-"438","Reindeer","Brain","Nano-QuIC",-3,36,0.94
-"439","Reindeer","Brain","Nano-QuIC",-3,40,0.919
-"440","Reindeer","Brain","Nano-QuIC",-3,44,0.904
-"441","Reindeer","Brain","Nano-QuIC",-3,48,0.887
-"442","Reindeer","Brain","Nano-QuIC",-2,24,0.923
-"443","Reindeer","Brain","Nano-QuIC",-2,28,0.94
-"444","Reindeer","Brain","Nano-QuIC",-2,32,0.931
-"445","Reindeer","Brain","Nano-QuIC",-2,36,0.925
-"446","Reindeer","Brain","Nano-QuIC",-2,40,0.917
-"447","Reindeer","Brain","Nano-QuIC",-2,44,0.933
-"448","Reindeer","Brain","Nano-QuIC",-2,48,0.944
-"449","Reindeer","Brain","RT-QuIC",-5,24,0.525
-"450","Reindeer","Brain","RT-QuIC",-5,28,0.569
-"451","Reindeer","Brain","RT-QuIC",-5,32,0.565
-"452","Reindeer","Brain","RT-QuIC",-5,36,0.571
-"453","Reindeer","Brain","RT-QuIC",-5,40,0.569
-"454","Reindeer","Brain","RT-QuIC",-5,44,0.583
-"455","Reindeer","Brain","RT-QuIC",-5,48,0.581
-"456","Reindeer","Brain","RT-QuIC",-4,24,0.777
-"457","Reindeer","Brain","RT-QuIC",-4,28,0.848
-"458","Reindeer","Brain","RT-QuIC",-4,32,0.852
-"459","Reindeer","Brain","RT-QuIC",-4,36,0.852
-"460","Reindeer","Brain","RT-QuIC",-4,40,0.854
-"461","Reindeer","Brain","RT-QuIC",-4,44,0.856
-"462","Reindeer","Brain","RT-QuIC",-4,48,0.852
-"463","Reindeer","Brain","RT-QuIC",-3,24,0.819
-"464","Reindeer","Brain","RT-QuIC",-3,28,0.819
-"465","Reindeer","Brain","RT-QuIC",-3,32,0.827
-"466","Reindeer","Brain","RT-QuIC",-3,36,0.854
-"467","Reindeer","Brain","RT-QuIC",-3,40,0.835
-"468","Reindeer","Brain","RT-QuIC",-3,44,0.777
-"469","Reindeer","Brain","RT-QuIC",-3,48,0.758
-"470","Reindeer","Brain","RT-QuIC",-2,24,0.423
-"471","Reindeer","Brain","RT-QuIC",-2,28,0.413
-"472","Reindeer","Brain","RT-QuIC",-2,32,0.402
-"473","Reindeer","Brain","RT-QuIC",-2,36,0.402
-"474","Reindeer","Brain","RT-QuIC",-2,40,0.4
-"475","Reindeer","Brain","RT-QuIC",-2,44,0.388
-"476","Reindeer","Brain","RT-QuIC",-2,48,0.379
+"421","Reindeer","Brainstem","Nano-QuIC",-5,24,0.444
+"422","Reindeer","Brainstem","Nano-QuIC",-5,28,0.442
+"423","Reindeer","Brainstem","Nano-QuIC",-5,32,0.508
+"424","Reindeer","Brainstem","Nano-QuIC",-5,36,0.515
+"425","Reindeer","Brainstem","Nano-QuIC",-5,40,0.51
+"426","Reindeer","Brainstem","Nano-QuIC",-5,44,0.531
+"427","Reindeer","Brainstem","Nano-QuIC",-5,48,0.533
+"428","Reindeer","Brainstem","Nano-QuIC",-4,24,0.59
+"429","Reindeer","Brainstem","Nano-QuIC",-4,28,0.59
+"430","Reindeer","Brainstem","Nano-QuIC",-4,32,0.579
+"431","Reindeer","Brainstem","Nano-QuIC",-4,36,0.61
+"432","Reindeer","Brainstem","Nano-QuIC",-4,40,0.598
+"433","Reindeer","Brainstem","Nano-QuIC",-4,44,0.6
+"434","Reindeer","Brainstem","Nano-QuIC",-4,48,0.6
+"435","Reindeer","Brainstem","Nano-QuIC",-3,24,0.95
+"436","Reindeer","Brainstem","Nano-QuIC",-3,28,0.952
+"437","Reindeer","Brainstem","Nano-QuIC",-3,32,0.946
+"438","Reindeer","Brainstem","Nano-QuIC",-3,36,0.94
+"439","Reindeer","Brainstem","Nano-QuIC",-3,40,0.919
+"440","Reindeer","Brainstem","Nano-QuIC",-3,44,0.904
+"441","Reindeer","Brainstem","Nano-QuIC",-3,48,0.887
+"442","Reindeer","Brainstem","Nano-QuIC",-2,24,0.923
+"443","Reindeer","Brainstem","Nano-QuIC",-2,28,0.942
+"444","Reindeer","Brainstem","Nano-QuIC",-2,32,0.931
+"445","Reindeer","Brainstem","Nano-QuIC",-2,36,0.925
+"446","Reindeer","Brainstem","Nano-QuIC",-2,40,0.919
+"447","Reindeer","Brainstem","Nano-QuIC",-2,44,0.933
+"448","Reindeer","Brainstem","Nano-QuIC",-2,48,0.944
+"449","Reindeer","Brainstem","RT-QuIC",-5,24,0.525
+"450","Reindeer","Brainstem","RT-QuIC",-5,28,0.569
+"451","Reindeer","Brainstem","RT-QuIC",-5,32,0.565
+"452","Reindeer","Brainstem","RT-QuIC",-5,36,0.571
+"453","Reindeer","Brainstem","RT-QuIC",-5,40,0.569
+"454","Reindeer","Brainstem","RT-QuIC",-5,44,0.583
+"455","Reindeer","Brainstem","RT-QuIC",-5,48,0.581
+"456","Reindeer","Brainstem","RT-QuIC",-4,24,0.777
+"457","Reindeer","Brainstem","RT-QuIC",-4,28,0.848
+"458","Reindeer","Brainstem","RT-QuIC",-4,32,0.852
+"459","Reindeer","Brainstem","RT-QuIC",-4,36,0.852
+"460","Reindeer","Brainstem","RT-QuIC",-4,40,0.854
+"461","Reindeer","Brainstem","RT-QuIC",-4,44,0.856
+"462","Reindeer","Brainstem","RT-QuIC",-4,48,0.852
+"463","Reindeer","Brainstem","RT-QuIC",-3,24,0.819
+"464","Reindeer","Brainstem","RT-QuIC",-3,28,0.819
+"465","Reindeer","Brainstem","RT-QuIC",-3,32,0.827
+"466","Reindeer","Brainstem","RT-QuIC",-3,36,0.854
+"467","Reindeer","Brainstem","RT-QuIC",-3,40,0.835
+"468","Reindeer","Brainstem","RT-QuIC",-3,44,0.777
+"469","Reindeer","Brainstem","RT-QuIC",-3,48,0.758
+"470","Reindeer","Brainstem","RT-QuIC",-2,24,0.425
+"471","Reindeer","Brainstem","RT-QuIC",-2,28,0.413
+"472","Reindeer","Brainstem","RT-QuIC",-2,32,0.402
+"473","Reindeer","Brainstem","RT-QuIC",-2,36,0.402
+"474","Reindeer","Brainstem","RT-QuIC",-2,40,0.4
+"475","Reindeer","Brainstem","RT-QuIC",-2,44,0.385
+"476","Reindeer","Brainstem","RT-QuIC",-2,48,0.379
 "477","Reindeer","Lymph Node","Nano-QuIC",-5,24,0.606
 "478","Reindeer","Lymph Node","Nano-QuIC",-5,28,0.627
-"479","Reindeer","Lymph Node","Nano-QuIC",-5,32,0.717
+"479","Reindeer","Lymph Node","Nano-QuIC",-5,32,0.715
 "480","Reindeer","Lymph Node","Nano-QuIC",-5,36,0.775
 "481","Reindeer","Lymph Node","Nano-QuIC",-5,40,0.785
 "482","Reindeer","Lymph Node","Nano-QuIC",-5,44,0.867
@@ -508,7 +508,7 @@
 "507","Reindeer","Lymph Node","RT-QuIC",-5,32,0.725
 "508","Reindeer","Lymph Node","RT-QuIC",-5,36,0.823
 "509","Reindeer","Lymph Node","RT-QuIC",-5,40,0.827
-"510","Reindeer","Lymph Node","RT-QuIC",-5,44,0.84
+"510","Reindeer","Lymph Node","RT-QuIC",-5,44,0.842
 "511","Reindeer","Lymph Node","RT-QuIC",-5,48,0.838
 "512","Reindeer","Lymph Node","RT-QuIC",-4,24,0.856
 "513","Reindeer","Lymph Node","RT-QuIC",-4,28,0.896
@@ -530,4 +530,4 @@
 "529","Reindeer","Lymph Node","RT-QuIC",-2,36,0.7
 "530","Reindeer","Lymph Node","RT-QuIC",-2,40,0.694
 "531","Reindeer","Lymph Node","RT-QuIC",-2,44,0.704
-"532","Reindeer","Lymph Node","RT-QuIC",-2,48,0.725
+"532","Reindeer","Lymph Node","RT-QuIC",-2,48,0.723

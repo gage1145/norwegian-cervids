@@ -1,0 +1,33 @@
+"","animal","species","elisa","Nano-QuIC_Brainstem","Nano-QuIC_Lymph Node","RT-QuIC_Brainstem","RT-QuIC_Lymph Node"
+"1","M1","Moose",TRUE,1,0.1875,0.75,0.3125
+"2","M10","Moose",TRUE,0,0,0.0625,0
+"3","M12","Moose",TRUE,0.75,0,0.75,0.125
+"4","M277","Moose",FALSE,0,0,0,0
+"5","M281","Moose",FALSE,0,0,0,0
+"6","M285","Moose",FALSE,0,0,0,0
+"7","M287","Moose",FALSE,0,0,0,0
+"8","M3","Moose",TRUE,0.875,0,0.75,0.0625
+"9","M5","Moose",TRUE,0.4375,0,0.4375,0
+"10","M539","Moose",FALSE,0,0,0,0
+"11","M540","Moose",FALSE,0,0,0,0
+"12","M6","Moose",TRUE,0.875,0,0.625,0
+"13","M7","Moose",TRUE,1,0.75,1,0.75
+"14","M8","Moose",TRUE,1,0.25,0.75,0
+"15","M9","Moose",TRUE,0.6875,0,0.375,0.3125
+"16","R10","Reindeer",TRUE,0.5,0.8125,0.3125,0.625
+"17","R11","Reindeer",TRUE,0.5,0.5625,0.125,0.4375
+"18","R12752","Reindeer",FALSE,0.125,0,0,0
+"19","R16","Reindeer",TRUE,0.8125,0.625,0.3125,0.75
+"20","R18","Reindeer",TRUE,0.0625,NA,0,NA
+"21","R21","Reindeer",TRUE,0.5625,0.71875,0.375,0.75
+"22","R3","Reindeer",FALSE,0,0.0625,0,0
+"23","R4100","Reindeer",FALSE,0,0,0,0
+"24","R5","Reindeer",FALSE,0,0,0,0
+"25","R5381","Reindeer",FALSE,0,0,0,0
+"26","R9","Reindeer",TRUE,0,NA,0.125,NA
+"27","RD1","Red Deer",TRUE,0.375,0.125,0.375,0.0625
+"28","RD231","Red Deer",FALSE,0.0625,0,0,0
+"29","RD242","Red Deer",FALSE,0,0,0,0
+"30","RD3","Red Deer",TRUE,1,0.4375,0.5,0.4375
+"31","RD527","Red Deer",FALSE,0.0625,0,0.1875,0
+"32","RD533","Red Deer",FALSE,0,0,0,0

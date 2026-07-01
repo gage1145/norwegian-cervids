@@ -26,7 +26,7 @@ elisa_colors <- c("Negative" = "navy", "Positive" = "red")
 format_labels <- function(df) {
   df <- clean_names(df, replace = c("TtT" = "ttt"))
   species_key <- c(M = "Moose", R = "Reindeer", RD = "Red Deer")
-  tissue_key <- c(BR = "Brain", LN = "Lymph Node", SK = "Skin", Ear = "Skin")
+  tissue_key <- c(BR = "Brainstem", LN = "Lymph Node", SK = "Skin", Ear = "Skin")
   assay_key <- c(RT = "RT-QuIC", NQ = "Nano-QuIC")
   if ("species" %in% colnames(df)) df <- mutate(df, species = species_key[str_extract(species, "[A-Z]{1,2}")])
   if ("tissue" %in% colnames(df)) df <- mutate(df, tissue = tissue_key[str_extract(tissue, "[A-Z]{2}|Ear")])
@@ -45,7 +45,8 @@ df_clean <- read.csv("data/clean_data.csv", check.names = FALSE, row.names = 1) 
   filter(dilutions > -6 & !(tissue == "Lymph Node" & dilutions > -2)) %>%
   mutate(
     across(c(assay, animal, animal_id, species, tissue, rxn, id, genotype), as.factor),
-    dilutions = round(dilutions, 2)
+    dilutions = round(dilutions, 2),
+    # tissue = ifelse(tissue == "Brain", "Brainstem", tissue)
   )
 
 
@@ -206,6 +207,19 @@ top_combos <- roc_aucs %>%
   slice_min(cutoff, with_ties = FALSE) %>%
   ungroup()
 
+# Summary table for Zoe
+df_sum <- df_clean %>%
+  # filter(assay == "Nano-QuIC" & dilutions == -2 | assay == "RT-QuIC" & dilutions == -3) %>%
+  group_by(animal, species, tissue, assay, dilutions, cutoff, elisa) %>%
+  right_join(top_combos) %>%
+  filter(tissue != "Skin") %>%
+  group_by(animal, species, tissue, assay, elisa) %>%
+  summarize(
+    perc_crossed = mean(crossed),
+  ) %>%
+  pivot_wider(names_from = assay, values_from = perc_crossed) %>%
+  pivot_wider(names_from = tissue, values_from = c(`Nano-QuIC`, `RT-QuIC`))
+write.csv(df_sum, "sum.csv")
 
 ## Plot ROC curves -------------------------------------------------------
 
@@ -255,19 +269,19 @@ make_roc_plot <- function(x, spec = NULL, tissues = NULL, fct_col = "dilutions",
     )
 }
 
-roc_plot_specs <- tibble(
-  spec    = list("Moose", "Reindeer", "Red Deer", NULL),
-  tissues = list(c("Brain", "Lymph Node"), c("Brain", "Lymph Node"), c("Brain", "Lymph Node"), "Skin"),
-  fct_row = c("tissue", "tissue", "tissue", "species"),
-  file    = c("moose_roc.png", "reindeer_roc.png", "reddeer_roc.png", "skin_roc.png"),
-  height  = c(10, 10, 10, 10),
-  width   = c(16, 16, 16, 20)
-)
+# roc_plot_specs <- tibble(
+#   spec    = list("Moose", "Reindeer", "Red Deer", NULL),
+#   tissues = list(c("Brainstem", "Lymph Node"), c("Brainstem", "Lymph Node"), c("Brainstem", "Lymph Node"), c("Skin")),
+#   fct_row = c("tissue", "tissue", "tissue", "species"),
+#   file    = c("moose_roc.png", "reindeer_roc.png", "reddeer_roc.png", "skin_roc.png"),
+#   height  = c(10, 10, 10, 10),
+#   width   = c(16, 16, 16, 20)
+# )
 
-pwalk(roc_plot_specs, function(spec, tissues, fct_row, file, height, width) {
-  p <- make_roc_plot(roc_coords, spec = spec, tissues = tissues, fct_row = fct_row)
-  ggsave(file, plot = p, path = "figures", height = height, width = width)
-})
+# pwalk(roc_plot_specs, function(spec, tissues, fct_row, file, height, width) {
+#   p <- make_roc_plot(roc_coords, spec = spec, tissues = tissues, fct_row = fct_row)
+#   ggsave(file, plot = p, path = "figures", height = height, width = width)
+# })
 
 
 # Cutoff Analysis --------------------------------------------------------
@@ -434,7 +448,8 @@ roc_aucs %>%
   scale_y_continuous(breaks = seq(24, 48, 4)) +
   {if (for_manuscript) ggtitle("Area Under ROC Curve Heatmap") else .} +
   labs(
-    fill = ifelse(for_manuscript, "AUC", "AUC of ROC")
+    fill = ifelse(for_manuscript, "AUC", "AUC of ROC"),
+    x = "Log10 Dilution Factor"
   ) +
   main_theme +
   theme(
@@ -454,14 +469,58 @@ ggsave(
 # RAF Graphs -------------------------------------------------------------
 
 
-make_boxplot <- function(data, y, t, dil = -3) {
+make_boxplot <- function(data, y, t) {
+  
+
   cutoffs <- roc_aucs %>%
   filter(tissue == t) %>%
-  summarize(.by=c(species, assay, dilutions, cutoff)) %>%
-  filter(dilutions == dil) %>%
-  slice_min(cutoff, with_ties = FALSE, by = c(species, assay)) %>%
-  select(-dilutions)
-  
+  summarize(
+    cutoff = cutoff[which.max(roc_auc)][1],
+    .by=c(species, assay, dilutions)
+  ) 
+
+  pvals <- data %>%
+  filter(tissue == t, dilutions > -5) %>% 
+  inner_join(cutoffs) %>%
+  summarize(
+    p.value = wilcox.test(!!sym(y) ~ elisa)$p.value,
+    .by = c(species, assay, dilutions)
+  ) %>%
+  mutate(
+    label = paste("p =", signif(p.value, 2)),
+    xmin  = ifelse(assay == "Nano-QuIC", 0.875, 1.125),
+    xmax  = ifelse(assay == "Nano-QuIC", 1.875, 2.125),
+    y     = ifelse(
+      assay == "Nano-QuIC", 
+      ifelse(y == "raf", 0.5, 5.5), 
+      ifelse(y == "raf", 0.75, 8.25)
+    ),
+    # color = ifelse(p.value < 0.05, "darkred", "black"),
+    species = str_remove_all(species, " "),
+    # elisa = ifelse(elisa, "Positive", "Negative"),
+    dilutions = paste0("10^", dilutions)
+  ) %>%
+    filter(p.value < 0.05)
+
+  pvals2 <- data %>%
+  filter(tissue == t, dilutions > -5) %>% 
+  inner_join(cutoffs) %>%
+  summarize(
+    p.value = wilcox.test(!!sym(y) ~ assay)$p.value,
+    # elisa = sum(elisa) != 0,
+    .by = c(species, elisa, dilutions)
+  ) %>%
+  mutate(
+    label = paste("p =", signif(p.value, 2)),
+    y     = ifelse(y == "raf", 1, 10),
+    # color = ifelse(p.value < 0.05, "darkred", "black"),
+    species = str_remove_all(species, " "),
+    dilutions = paste0("10^", dilutions),
+    elisa = ifelse(elisa, "Positive", "Negative"),
+  ) %>%
+    filter(p.value < 0.05)
+  pvals2
+
   data %>%
     mutate(raf = ifelse(crossed, raf, 0)) %>%
     right_join(cutoffs) %>%
@@ -474,18 +533,29 @@ make_boxplot <- function(data, y, t, dil = -3) {
     ) %>%
     ggplot(aes(elisa, .data[[y]], fill = assay)) +
     geom_boxplot() +
-    stat_compare_means(
-      method = "wilcox.test",
-      label = "p.signif",
-      label.y.npc = 0.8,
-      tip.length = 0.01,
-      size = 10,
-      fontface = "bold",
-      show.legend = FALSE,
-      hide.ns = TRUE
+    new_scale_color() +
+    geom_text(
+      aes(x = elisa, y = y, label = label),
+      data = pvals2, inherit.aes = FALSE, size = 5, fontface = "bold"
     ) +
+    geom_text(
+      aes(x = (xmin + xmax) / 2, y = y * 1.1, label = label),
+      data = pvals, inherit.aes = FALSE, size = 5, fontface = "bold"
+    ) +
+    geom_segment(
+      aes(x = xmin, xend = xmax, y = y, yend = y),
+      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+    ) +
+    geom_segment(
+      aes(x = xmin, xend = xmin, y = y * 0.9, yend = y),
+      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+    ) +
+    geom_segment(
+      aes(x = xmax, xend = xmax, y = y * 0.9, yend = y),
+      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+    ) +
+    scale_color_identity() +
     facet_grid(rows = vars(dilutions), cols=vars(species), scale = "free_x", labeller=label_parsed) +
-    # scale_y_continuous(limits = c(0, 0.3)) +
     scale_fill_manual(values = quic_colors) +
     ggtitle(str_wrap(sprintf("RT-QuIC vs Nano-QuIC %s %s", t, toupper(y)), width = 40)) +
     labs(
@@ -500,36 +570,52 @@ make_boxplot <- function(data, y, t, dil = -3) {
 }
 
 ## Brain RAF Boxplot ---------------------------------------------------------
-make_boxplot(df_clean, "raf", "Brain", -3)
-ggsave("brain_bp.v3.png", path="figures/raf", width = 12, height = 10)
+braf <- df_clean %>%
+make_boxplot("raf", "Brainstem")
+# ggsave("brain_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 
 ## Lymph RAF Node Boxplot ----------------------------------------------------
-make_boxplot(df_clean, "raf", "Lymph Node", -3)
-ggsave("lymph_bp.v3.png", path="figures/raf", width = 12, height = 10)
+lraf <- make_boxplot(df_clean, "raf", "Lymph Node")
+# ggsave("lymph_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 ## Skin RAF Boxplot ----------------------------------------------------------
 dils <- sort(unique(df_clean$dilutions))
-df_clean %>%
+skraf <- df_clean %>%
   filter(dilutions > -4) %>%
-  make_boxplot("raf", "Skin", -1.3)
-ggsave("skin_bp.v3.png", path="figures/raf", width = 12, height = 10)
+  make_boxplot("raf", "Skin")
+# ggsave("skin_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 ## Brain PCA Boxplot ---------------------------------------------------------
-make_boxplot(df_clean, "pc1", "Brain", -3)
-ggsave("brain_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+bpca <- make_boxplot(df_clean, "pc1", "Brainstem")
+# ggsave("brain_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 
 ## Lymph PCA Node Boxplot ----------------------------------------------------
-make_boxplot(df_clean, "pc1", "Lymph Node", -3)
-ggsave("lymph_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+lpca <- make_boxplot(df_clean, "pc1", "Lymph Node")
+# ggsave("lymph_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 ## Skin PCA Boxplot ----------------------------------------------------------
 dils <- sort(unique(df_clean$dilutions))
-df_clean %>%
+skpca <- df_clean %>%
   filter(dilutions > -4) %>%
-  make_boxplot("pc1", "Skin", -1.3)
-ggsave("skin_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+  make_boxplot("pc1", "Skin")
+# ggsave("skin_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
+
+
+
+# Combined boxplots ------------------------------------------------------
+
+
+ggarrange(braf, bpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A", "B"), font.label=list(size=30))
+ggsave("combined_brain_box.png", path="figures", width=20, height=12)
+
+ggarrange(lraf, lpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A", "B"), font.label=list(size=30))
+ggsave("combined_lymph_box.png", path="figures", width=20, height=12)
+
+ggarrange(skraf, skpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A", "B"), font.label=list(size=30))
+ggsave("combined_skin_box.png", path="figures", width=20, height=12)
+
 
 # Tables --------------------------------------------------------------------
 
