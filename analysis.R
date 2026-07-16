@@ -482,46 +482,46 @@ make_boxplot <- function(data, y, t) {
 
   if (y != "raf") {
     pvals <- data %>%
-  filter(tissue == t, dilutions > -5) %>% 
-  inner_join(cutoffs) %>%
-  summarize(
-    p.value = wilcox.test(!!sym(y) ~ elisa)$p.value,
-    .by = c(species, assay, dilutions)
-  ) %>%
-  mutate(
-    label = paste("p =", signif(p.value, 2)),
-    xmin  = ifelse(assay == "Nano-QuIC", 0.875, 1.125),
-    xmax  = ifelse(assay == "Nano-QuIC", 1.875, 2.125),
-    y     = ifelse(
-      assay == "Nano-QuIC", 
-      ifelse(y == "raf", 0.5, 5.5), 
-      ifelse(y == "raf", 0.75, 8.25)
-    ),
-    # color = ifelse(p.value < 0.05, "darkred", "black"),
-    species = str_remove_all(species, " "),
-    # elisa = ifelse(elisa, "Positive", "Negative"),
-    dilutions = paste0("10^", dilutions)
-  ) %>%
-    filter(p.value < 0.05)
+    filter(tissue == t, dilutions > -5) %>% 
+    inner_join(cutoffs) %>%
+    summarize(
+      p.value = wilcox.test(!!sym(y) ~ elisa)$p.value,
+      .by = c(species, assay, dilutions)
+    ) %>%
+    mutate(
+      label = paste("p =", signif(p.value, 2)),
+      xmin  = ifelse(assay == "Nano-QuIC", 0.875, 1.125),
+      xmax  = ifelse(assay == "Nano-QuIC", 1.875, 2.125),
+      y     = ifelse(
+        assay == "Nano-QuIC", 
+        ifelse(y == "raf", 0.5, 5.5), 
+        ifelse(y == "raf", 0.75, 8.25)
+      ),
+      # color = ifelse(p.value < 0.05, "darkred", "black"),
+      species = str_remove_all(species, " "),
+      # elisa = ifelse(elisa, "Positive", "Negative"),
+      dilutions = paste0("10^", dilutions)
+    ) %>%
+      filter(p.value < 0.05)
 
-  pvals2 <- data %>%
-  filter(tissue == t, dilutions > -5) %>% 
-  inner_join(cutoffs) %>%
-  summarize(
-    p.value = wilcox.test(!!sym(y) ~ assay)$p.value,
-    # elisa = sum(elisa) != 0,
-    .by = c(species, elisa, dilutions)
-  ) %>%
-  mutate(
-    label = paste("p =", signif(p.value, 2)),
-    y     = ifelse(y == "raf", 1, 10),
-    # color = ifelse(p.value < 0.05, "darkred", "black"),
-    species = str_remove_all(species, " "),
-    dilutions = paste0("10^", dilutions),
-    elisa = ifelse(elisa, "Positive", "Negative"),
-  ) %>%
-    filter(p.value < 0.05)
-  pvals2
+    pvals2 <- data %>%
+    filter(tissue == t, dilutions > -5) %>% 
+    inner_join(cutoffs) %>%
+    summarize(
+      p.value = wilcox.test(!!sym(y) ~ assay)$p.value,
+      # elisa = sum(elisa) != 0,
+      .by = c(species, elisa, dilutions)
+    ) %>%
+    mutate(
+      label = paste("p =", signif(p.value, 2)),
+      y     = ifelse(y == "raf", 1, 10),
+      # color = ifelse(p.value < 0.05, "darkred", "black"),
+      species = str_remove_all(species, " "),
+      dilutions = paste0("10^", dilutions),
+      elisa = ifelse(elisa, "Positive", "Negative"),
+    ) %>%
+      filter(p.value < 0.05)
+    pvals2
   }
 
   data %>%
@@ -540,25 +540,25 @@ make_boxplot <- function(data, y, t) {
       if (y != "raf") {
         list(
           new_scale_color(),
-    geom_text(
-      aes(x = elisa, y = y, label = label),
-      data = pvals2, inherit.aes = FALSE, size = 5, fontface = "bold"
+          geom_text(
+            aes(x = elisa, y = y, label = label),
+            data = pvals2, inherit.aes = FALSE, size = 5, fontface = "bold"
           ),
-    geom_text(
-      aes(x = (xmin + xmax) / 2, y = y * 1.1, label = label),
-      data = pvals, inherit.aes = FALSE, size = 5, fontface = "bold"
+          geom_text(
+            aes(x = (xmin + xmax) / 2, y = y * 1.1, label = label),
+            data = pvals, inherit.aes = FALSE, size = 5, fontface = "bold"
           ),
-    geom_segment(
-      aes(x = xmin, xend = xmax, y = y, yend = y),
-      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+          geom_segment(
+            aes(x = xmin, xend = xmax, y = y, yend = y),
+            data = pvals, inherit.aes = FALSE, linewidth = 0.5
           ),
-    geom_segment(
-      aes(x = xmin, xend = xmin, y = y * 0.9, yend = y),
-      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+          geom_segment(
+            aes(x = xmin, xend = xmin, y = y * 0.9, yend = y),
+            data = pvals, inherit.aes = FALSE, linewidth = 0.5
           ),
-    geom_segment(
-      aes(x = xmax, xend = xmax, y = y * 0.9, yend = y),
-      data = pvals, inherit.aes = FALSE, linewidth = 0.5
+          geom_segment(
+            aes(x = xmax, xend = xmax, y = y * 0.9, yend = y),
+            data = pvals, inherit.aes = FALSE, linewidth = 0.5
           )
         )
       }
@@ -633,3 +633,18 @@ top_all <- top_combos %>%
   filter(roc_auc > 0.7) %>%
   arrange(species, tissue, assay, desc(roc_auc), cutoff)
 write.csv(top_all, "data/top_all.csv", row.names = FALSE)
+
+
+
+# Minimum Dilution with >= 50% reps over threshold -------------------------
+
+
+df_min_dil <- df_clean %>%
+  summarize(
+    perc_crossed = mean(crossed),
+    .by = c(animal, species, tissue, assay, dilutions, cutoff, elisa)
+  ) %>%
+  filter(perc_crossed >= 0.5, cutoff == max(cutoff, na.rm = TRUE)) %>%
+  filter(dilutions == min(dilutions, na.rm = TRUE), .by = c(animal, species, tissue, assay, elisa)) %>%
+  arrange(species, animal, tissue, assay, dilutions)
+write.csv(df_min_dil, "data/min_dil.csv", row.names = FALSE)
