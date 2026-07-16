@@ -473,7 +473,6 @@ ggsave(
 
 make_boxplot <- function(data, y, t) {
   
-
   cutoffs <- roc_aucs %>%
   filter(tissue == t) %>%
   summarize(
@@ -481,7 +480,8 @@ make_boxplot <- function(data, y, t) {
     .by=c(species, assay, dilutions)
   ) 
 
-  pvals <- data %>%
+  if (y != "raf") {
+    pvals <- data %>%
   filter(tissue == t, dilutions > -5) %>% 
   inner_join(cutoffs) %>%
   summarize(
@@ -522,6 +522,7 @@ make_boxplot <- function(data, y, t) {
   ) %>%
     filter(p.value < 0.05)
   pvals2
+  }
 
   data %>%
     mutate(raf = ifelse(crossed, raf, 0)) %>%
@@ -535,27 +536,33 @@ make_boxplot <- function(data, y, t) {
     ) %>%
     ggplot(aes(elisa, .data[[y]], fill = assay)) +
     geom_boxplot() +
-    new_scale_color() +
+    {
+      if (y != "raf") {
+        list(
+          new_scale_color(),
     geom_text(
       aes(x = elisa, y = y, label = label),
       data = pvals2, inherit.aes = FALSE, size = 5, fontface = "bold"
-    ) +
+          ),
     geom_text(
       aes(x = (xmin + xmax) / 2, y = y * 1.1, label = label),
       data = pvals, inherit.aes = FALSE, size = 5, fontface = "bold"
-    ) +
+          ),
     geom_segment(
       aes(x = xmin, xend = xmax, y = y, yend = y),
       data = pvals, inherit.aes = FALSE, linewidth = 0.5
-    ) +
+          ),
     geom_segment(
       aes(x = xmin, xend = xmin, y = y * 0.9, yend = y),
       data = pvals, inherit.aes = FALSE, linewidth = 0.5
-    ) +
+          ),
     geom_segment(
       aes(x = xmax, xend = xmax, y = y * 0.9, yend = y),
       data = pvals, inherit.aes = FALSE, linewidth = 0.5
-    ) +
+          )
+        )
+      }
+    } +
     scale_color_identity() +
     facet_grid(rows = vars(dilutions), cols=vars(species), scale = "free_x", labeller=label_parsed) +
     scale_fill_manual(values = quic_colors) +
@@ -616,7 +623,7 @@ ggarrange(lraf, lpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A",
 ggsave("combined_lymph_box.png", path="figures", width=20, height=12)
 
 ggarrange(skraf, skpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A", "B"), font.label=list(size=30))
-ggsave("combined_skin_box.png", path="figures", width=20, height=12)
+ggsave("combined_skin_box.png", path="figures", width=20, height=16)
 
 
 # Tables --------------------------------------------------------------------
