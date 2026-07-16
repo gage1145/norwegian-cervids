@@ -1,0 +1,249 @@
+"","animal","species","tissue","elisa","cutoff","dilutions","perc_crossed_Nano-QuIC","perc_crossed_RT-QuIC","total_Nano-QuIC","total_RT-QuIC","crossed_Nano-QuIC","crossed_RT-QuIC"
+"1","M1","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"2","M1","Moose","Brainstem",TRUE,32,-2,100,NA,4,NA,4,NA
+"3","M1","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"4","M1","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"5","M1","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"6","M1","Moose","Lymph Node",TRUE,24,-2,75,NA,4,NA,3,NA
+"7","M1","Moose","Lymph Node",TRUE,28,-2,NA,100,NA,4,NA,4
+"8","M1","Moose","Lymph Node",TRUE,44,-3,NA,25,NA,4,NA,1
+"9","M10","Moose","Brainstem",TRUE,24,-3,0,NA,4,NA,0,NA
+"10","M10","Moose","Brainstem",TRUE,32,-2,0,NA,4,NA,0,NA
+"11","M10","Moose","Brainstem",TRUE,44,-3,NA,25,NA,4,NA,1
+"12","M10","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"13","M10","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"14","M10","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"15","M10","Moose","Lymph Node",TRUE,28,-2,NA,0,NA,4,NA,0
+"16","M10","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"17","M12","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"18","M12","Moose","Brainstem",TRUE,32,-2,0,NA,4,NA,0,NA
+"19","M12","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"20","M12","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"21","M12","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"22","M12","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"23","M12","Moose","Lymph Node",TRUE,28,-2,NA,50,NA,4,NA,2
+"24","M12","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"25","M277","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"26","M277","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"27","M277","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"28","M277","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"29","M277","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"30","M277","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"31","M277","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"32","M277","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"33","M281","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"34","M281","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"35","M281","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"36","M281","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"37","M281","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"38","M281","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"39","M281","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"40","M281","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"41","M285","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"42","M285","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"43","M285","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"44","M285","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"45","M285","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"46","M285","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"47","M285","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"48","M285","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"49","M287","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"50","M287","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"51","M287","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"52","M287","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"53","M287","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"54","M287","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"55","M287","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"56","M287","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"57","M3","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"58","M3","Moose","Brainstem",TRUE,32,-2,50,NA,4,NA,2,NA
+"59","M3","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"60","M3","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"61","M3","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"62","M3","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"63","M3","Moose","Lymph Node",TRUE,28,-2,NA,0,NA,4,NA,0
+"64","M3","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"65","M5","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"66","M5","Moose","Brainstem",TRUE,32,-2,0,NA,4,NA,0,NA
+"67","M5","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"68","M5","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"69","M5","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"70","M5","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"71","M5","Moose","Lymph Node",TRUE,28,-2,NA,0,NA,4,NA,0
+"72","M5","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"73","M539","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"74","M539","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"75","M539","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"76","M539","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"77","M539","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"78","M539","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"79","M539","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"80","M539","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"81","M540","Moose","Brainstem",FALSE,24,-3,0,NA,4,NA,0,NA
+"82","M540","Moose","Brainstem",FALSE,32,-2,0,NA,4,NA,0,NA
+"83","M540","Moose","Brainstem",FALSE,44,-3,NA,0,NA,4,NA,0
+"84","M540","Moose","Brainstem",FALSE,48,-2,NA,0,NA,4,NA,0
+"85","M540","Moose","Lymph Node",FALSE,24,-3,0,NA,4,NA,0,NA
+"86","M540","Moose","Lymph Node",FALSE,24,-2,0,NA,4,NA,0,NA
+"87","M540","Moose","Lymph Node",FALSE,28,-2,NA,0,NA,4,NA,0
+"88","M540","Moose","Lymph Node",FALSE,44,-3,NA,0,NA,4,NA,0
+"89","M6","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"90","M6","Moose","Brainstem",TRUE,32,-2,75,NA,4,NA,3,NA
+"91","M6","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"92","M6","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"93","M6","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"94","M6","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"95","M6","Moose","Lymph Node",TRUE,28,-2,NA,0,NA,4,NA,0
+"96","M6","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"97","M7","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"98","M7","Moose","Brainstem",TRUE,32,-2,100,NA,4,NA,4,NA
+"99","M7","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"100","M7","Moose","Brainstem",TRUE,48,-2,NA,100,NA,4,NA,4
+"101","M7","Moose","Lymph Node",TRUE,24,-3,100,NA,4,NA,4,NA
+"102","M7","Moose","Lymph Node",TRUE,24,-2,100,NA,4,NA,4,NA
+"103","M7","Moose","Lymph Node",TRUE,28,-2,NA,100,NA,4,NA,4
+"104","M7","Moose","Lymph Node",TRUE,44,-3,NA,100,NA,4,NA,4
+"105","M8","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"106","M8","Moose","Brainstem",TRUE,32,-2,100,NA,4,NA,4,NA
+"107","M8","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"108","M8","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"109","M8","Moose","Lymph Node",TRUE,24,-3,25,NA,4,NA,1,NA
+"110","M8","Moose","Lymph Node",TRUE,24,-2,50,NA,4,NA,2,NA
+"111","M8","Moose","Lymph Node",TRUE,28,-2,NA,0,NA,4,NA,0
+"112","M8","Moose","Lymph Node",TRUE,44,-3,NA,0,NA,4,NA,0
+"113","M9","Moose","Brainstem",TRUE,24,-3,100,NA,4,NA,4,NA
+"114","M9","Moose","Brainstem",TRUE,32,-2,100,NA,4,NA,4,NA
+"115","M9","Moose","Brainstem",TRUE,44,-3,NA,100,NA,4,NA,4
+"116","M9","Moose","Brainstem",TRUE,48,-2,NA,0,NA,4,NA,0
+"117","M9","Moose","Lymph Node",TRUE,24,-3,0,NA,4,NA,0,NA
+"118","M9","Moose","Lymph Node",TRUE,24,-2,0,NA,4,NA,0,NA
+"119","M9","Moose","Lymph Node",TRUE,28,-2,NA,100,NA,4,NA,4
+"120","M9","Moose","Lymph Node",TRUE,44,-3,NA,25,NA,4,NA,1
+"121","R10","Reindeer","Brainstem",TRUE,28,-3,100,NA,4,NA,4,NA
+"122","R10","Reindeer","Brainstem",TRUE,48,-2,100,NA,4,NA,4,NA
+"123","R10","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"124","R10","Reindeer","Brainstem",TRUE,36,-3,NA,100,NA,4,NA,4
+"125","R10","Reindeer","Lymph Node",TRUE,28,-2,50,NA,4,NA,2,NA
+"126","R10","Reindeer","Lymph Node",TRUE,32,-3,100,NA,4,NA,4,NA
+"127","R10","Reindeer","Lymph Node",TRUE,24,-3,NA,100,NA,4,NA,4
+"128","R10","Reindeer","Lymph Node",TRUE,48,-2,NA,0,NA,4,NA,0
+"129","R11","Reindeer","Brainstem",TRUE,28,-3,100,NA,4,NA,4,NA
+"130","R11","Reindeer","Brainstem",TRUE,48,-2,100,NA,4,NA,4,NA
+"131","R11","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"132","R11","Reindeer","Brainstem",TRUE,36,-3,NA,50,NA,4,NA,2
+"133","R11","Reindeer","Lymph Node",TRUE,28,-2,100,NA,4,NA,4,NA
+"134","R11","Reindeer","Lymph Node",TRUE,32,-3,75,NA,4,NA,3,NA
+"135","R11","Reindeer","Lymph Node",TRUE,24,-3,NA,100,NA,4,NA,4
+"136","R11","Reindeer","Lymph Node",TRUE,48,-2,NA,0,NA,4,NA,0
+"137","R12752","Reindeer","Brainstem",FALSE,28,-3,25,NA,4,NA,1,NA
+"138","R12752","Reindeer","Brainstem",FALSE,48,-2,0,NA,4,NA,0,NA
+"139","R12752","Reindeer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"140","R12752","Reindeer","Brainstem",FALSE,36,-3,NA,0,NA,4,NA,0
+"141","R12752","Reindeer","Lymph Node",FALSE,28,-2,0,NA,4,NA,0,NA
+"142","R12752","Reindeer","Lymph Node",FALSE,32,-3,0,NA,4,NA,0,NA
+"143","R12752","Reindeer","Lymph Node",FALSE,24,-3,NA,0,NA,4,NA,0
+"144","R12752","Reindeer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"145","R16","Reindeer","Brainstem",TRUE,28,-3,100,NA,4,NA,4,NA
+"146","R16","Reindeer","Brainstem",TRUE,48,-2,100,NA,4,NA,4,NA
+"147","R16","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"148","R16","Reindeer","Brainstem",TRUE,36,-3,NA,50,NA,4,NA,2
+"149","R16","Reindeer","Lymph Node",TRUE,28,-2,100,NA,4,NA,4,NA
+"150","R16","Reindeer","Lymph Node",TRUE,32,-3,100,NA,4,NA,4,NA
+"151","R16","Reindeer","Lymph Node",TRUE,24,-3,NA,100,NA,4,NA,4
+"152","R16","Reindeer","Lymph Node",TRUE,48,-2,NA,100,NA,4,NA,4
+"153","R18","Reindeer","Brainstem",TRUE,28,-3,25,NA,4,NA,1,NA
+"154","R18","Reindeer","Brainstem",TRUE,48,-2,0,NA,4,NA,0,NA
+"155","R18","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"156","R18","Reindeer","Brainstem",TRUE,36,-3,NA,0,NA,4,NA,0
+"157","R21","Reindeer","Brainstem",TRUE,28,-3,100,NA,4,NA,4,NA
+"158","R21","Reindeer","Brainstem",TRUE,48,-2,100,NA,4,NA,4,NA
+"159","R21","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"160","R21","Reindeer","Brainstem",TRUE,36,-3,NA,100,NA,4,NA,4
+"161","R21","Reindeer","Lymph Node",TRUE,28,-2,87.5,NA,8,NA,7,NA
+"162","R21","Reindeer","Lymph Node",TRUE,32,-3,100,NA,8,NA,8,NA
+"163","R21","Reindeer","Lymph Node",TRUE,24,-3,NA,100,NA,8,NA,8
+"164","R21","Reindeer","Lymph Node",TRUE,48,-2,NA,62.5,NA,8,NA,5
+"165","R3","Reindeer","Brainstem",FALSE,28,-3,0,NA,4,NA,0,NA
+"166","R3","Reindeer","Brainstem",FALSE,48,-2,0,NA,4,NA,0,NA
+"167","R3","Reindeer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"168","R3","Reindeer","Brainstem",FALSE,36,-3,NA,0,NA,4,NA,0
+"169","R3","Reindeer","Lymph Node",FALSE,28,-2,25,NA,4,NA,1,NA
+"170","R3","Reindeer","Lymph Node",FALSE,32,-3,0,NA,4,NA,0,NA
+"171","R3","Reindeer","Lymph Node",FALSE,24,-3,NA,0,NA,4,NA,0
+"172","R3","Reindeer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"173","R4100","Reindeer","Brainstem",FALSE,28,-3,0,NA,4,NA,0,NA
+"174","R4100","Reindeer","Brainstem",FALSE,48,-2,0,NA,4,NA,0,NA
+"175","R4100","Reindeer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"176","R4100","Reindeer","Brainstem",FALSE,36,-3,NA,0,NA,4,NA,0
+"177","R4100","Reindeer","Lymph Node",FALSE,28,-2,0,NA,4,NA,0,NA
+"178","R4100","Reindeer","Lymph Node",FALSE,32,-3,0,NA,4,NA,0,NA
+"179","R4100","Reindeer","Lymph Node",FALSE,24,-3,NA,0,NA,4,NA,0
+"180","R4100","Reindeer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"181","R5","Reindeer","Brainstem",FALSE,28,-3,0,NA,4,NA,0,NA
+"182","R5","Reindeer","Brainstem",FALSE,48,-2,0,NA,4,NA,0,NA
+"183","R5","Reindeer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"184","R5","Reindeer","Brainstem",FALSE,36,-3,NA,0,NA,4,NA,0
+"185","R5","Reindeer","Lymph Node",FALSE,28,-2,0,NA,4,NA,0,NA
+"186","R5","Reindeer","Lymph Node",FALSE,32,-3,0,NA,4,NA,0,NA
+"187","R5","Reindeer","Lymph Node",FALSE,24,-3,NA,0,NA,4,NA,0
+"188","R5","Reindeer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"189","R5381","Reindeer","Brainstem",FALSE,28,-3,0,NA,4,NA,0,NA
+"190","R5381","Reindeer","Brainstem",FALSE,48,-2,0,NA,4,NA,0,NA
+"191","R5381","Reindeer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"192","R5381","Reindeer","Brainstem",FALSE,36,-3,NA,0,NA,4,NA,0
+"193","R5381","Reindeer","Lymph Node",FALSE,28,-2,0,NA,8,NA,0,NA
+"194","R5381","Reindeer","Lymph Node",FALSE,32,-3,0,NA,8,NA,0,NA
+"195","R5381","Reindeer","Lymph Node",FALSE,24,-3,NA,0,NA,8,NA,0
+"196","R5381","Reindeer","Lymph Node",FALSE,48,-2,NA,0,NA,8,NA,0
+"197","R9","Reindeer","Brainstem",TRUE,28,-3,0,NA,4,NA,0,NA
+"198","R9","Reindeer","Brainstem",TRUE,48,-2,0,NA,4,NA,0,NA
+"199","R9","Reindeer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"200","R9","Reindeer","Brainstem",TRUE,36,-3,NA,50,NA,4,NA,2
+"201","RD1","Red Deer","Brainstem",TRUE,40,-3,75,NA,4,NA,3,NA
+"202","RD1","Red Deer","Brainstem",TRUE,40,-2,75,NA,4,NA,3,NA
+"203","RD1","Red Deer","Brainstem",TRUE,24,-3,NA,100,NA,4,NA,4
+"204","RD1","Red Deer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"205","RD1","Red Deer","Lymph Node",TRUE,28,-3,0,NA,4,NA,0,NA
+"206","RD1","Red Deer","Lymph Node",TRUE,40,-2,50,NA,4,NA,2,NA
+"207","RD1","Red Deer","Lymph Node",TRUE,48,-3,NA,25,NA,4,NA,1
+"208","RD1","Red Deer","Lymph Node",TRUE,48,-2,NA,0,NA,4,NA,0
+"209","RD231","Red Deer","Brainstem",FALSE,40,-3,25,NA,4,NA,1,NA
+"210","RD231","Red Deer","Brainstem",FALSE,40,-2,0,NA,4,NA,0,NA
+"211","RD231","Red Deer","Brainstem",FALSE,24,-3,NA,0,NA,4,NA,0
+"212","RD231","Red Deer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"213","RD231","Red Deer","Lymph Node",FALSE,28,-3,0,NA,4,NA,0,NA
+"214","RD231","Red Deer","Lymph Node",FALSE,40,-2,0,NA,4,NA,0,NA
+"215","RD231","Red Deer","Lymph Node",FALSE,48,-3,NA,0,NA,4,NA,0
+"216","RD231","Red Deer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"217","RD242","Red Deer","Brainstem",FALSE,40,-3,0,NA,4,NA,0,NA
+"218","RD242","Red Deer","Brainstem",FALSE,40,-2,0,NA,4,NA,0,NA
+"219","RD242","Red Deer","Brainstem",FALSE,24,-3,NA,0,NA,4,NA,0
+"220","RD242","Red Deer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"221","RD242","Red Deer","Lymph Node",FALSE,28,-3,0,NA,4,NA,0,NA
+"222","RD242","Red Deer","Lymph Node",FALSE,40,-2,0,NA,4,NA,0,NA
+"223","RD242","Red Deer","Lymph Node",FALSE,48,-3,NA,0,NA,4,NA,0
+"224","RD242","Red Deer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"225","RD3","Red Deer","Brainstem",TRUE,40,-3,100,NA,4,NA,4,NA
+"226","RD3","Red Deer","Brainstem",TRUE,40,-2,100,NA,4,NA,4,NA
+"227","RD3","Red Deer","Brainstem",TRUE,24,-3,NA,0,NA,4,NA,0
+"228","RD3","Red Deer","Brainstem",TRUE,24,-2,NA,0,NA,4,NA,0
+"229","RD3","Red Deer","Lymph Node",TRUE,28,-3,75,NA,4,NA,3,NA
+"230","RD3","Red Deer","Lymph Node",TRUE,40,-2,100,NA,4,NA,4,NA
+"231","RD3","Red Deer","Lymph Node",TRUE,48,-3,NA,100,NA,4,NA,4
+"232","RD3","Red Deer","Lymph Node",TRUE,48,-2,NA,0,NA,4,NA,0
+"233","RD527","Red Deer","Brainstem",FALSE,40,-3,25,NA,4,NA,1,NA
+"234","RD527","Red Deer","Brainstem",FALSE,40,-2,0,NA,4,NA,0,NA
+"235","RD527","Red Deer","Brainstem",FALSE,24,-3,NA,50,NA,4,NA,2
+"236","RD527","Red Deer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"237","RD527","Red Deer","Lymph Node",FALSE,28,-3,0,NA,4,NA,0,NA
+"238","RD527","Red Deer","Lymph Node",FALSE,40,-2,0,NA,4,NA,0,NA
+"239","RD527","Red Deer","Lymph Node",FALSE,48,-3,NA,0,NA,4,NA,0
+"240","RD527","Red Deer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
+"241","RD533","Red Deer","Brainstem",FALSE,40,-3,0,NA,4,NA,0,NA
+"242","RD533","Red Deer","Brainstem",FALSE,40,-2,0,NA,4,NA,0,NA
+"243","RD533","Red Deer","Brainstem",FALSE,24,-3,NA,0,NA,4,NA,0
+"244","RD533","Red Deer","Brainstem",FALSE,24,-2,NA,0,NA,4,NA,0
+"245","RD533","Red Deer","Lymph Node",FALSE,28,-3,0,NA,4,NA,0,NA
+"246","RD533","Red Deer","Lymph Node",FALSE,40,-2,0,NA,4,NA,0,NA
+"247","RD533","Red Deer","Lymph Node",FALSE,48,-3,NA,0,NA,4,NA,0
+"248","RD533","Red Deer","Lymph Node",FALSE,48,-2,NA,0,NA,4,NA,0
