@@ -213,14 +213,15 @@ df_sum <- df_clean %>%
   # filter(assay == "Nano-QuIC" & dilutions == -2 | assay == "RT-QuIC" & dilutions == -3) %>%
   group_by(animal, species, tissue, assay, dilutions, cutoff, elisa) %>%
   right_join(top_combos) %>%
-  filter(tissue != "Skin") %>%
-  group_by(animal, species, tissue, assay, elisa) %>%
+  filter(tissue != "Skin", dilutions %in% c(-2, -3)) %>%
+  group_by(animal, species, tissue, assay, elisa, cutoff, dilutions) %>%
   summarize(
-    perc_crossed = mean(crossed),
+    perc_crossed = mean(crossed) * 100,
+    total = n(),
+    crossed = sum(crossed)
   ) %>%
-  pivot_wider(names_from = assay, values_from = perc_crossed) %>%
-  pivot_wider(names_from = tissue, values_from = c(`Nano-QuIC`, `RT-QuIC`))
-write.csv(df_sum, "sum.csv")
+  pivot_wider(names_from = assay, values_from = c(perc_crossed, total, crossed)) 
+write.csv(df_sum, "data/sum.csv")
 
 ## Plot ROC curves -------------------------------------------------------
 
