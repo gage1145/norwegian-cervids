@@ -158,7 +158,12 @@ get_roc <- function(species, tissue, assay, dilutions, cutoff) {
     return(NULL)
   }
 
-  temp_roc <- roc(temp_df, elisa, pc1, direction = ">")
+  temp_roc <- roc(
+    temp_df, 
+    elisa, 
+    pc1,
+    direction = ">"
+  )
   temp_roc[names(meta)] <- meta
   temp_roc
 }
@@ -222,6 +227,32 @@ df_sum <- df_clean %>%
   ) %>%
   pivot_wider(names_from = assay, values_from = c(perc_crossed, total, crossed)) 
 write.csv(df_sum, "data/sum.csv")
+
+library(kableExtra)
+read.csv("data/clean_data.csv", check.names = FALSE, row.names = 1) %>%
+  format_labels() %>%
+  mutate(
+    across(c(assay, animal, animal_id, species, tissue, rxn, id, genotype), as.factor),
+    dilutions = round(dilutions, 2),
+  ) %>%
+  filter(cutoff == 48) %>%
+  summarize(
+    perc_crossed = mean(crossed) * 100,
+    .by = c(species, elisa, animal, tissue, assay, dilutions)
+  ) %>%
+  # mutate(across(where(is.numeric), signif, 2)) %>%
+  pivot_wider(names_from = c(assay, dilutions), values_from = c(perc_crossed), ) %>%
+  # rename_with(~ str_replace(., "[A-z]+-[A-z]+_")) %>%
+  arrange(species, elisa, animal, tissue) %T>%
+  {
+    kable(., booktabs = TRUE, escape = FALSE) %>%
+    kable_styling(full_width = FALSE) %>%
+    collapse_rows(columns = c(1, 2, 3, 4), valign = "middle") 
+  } %>%
+  write.csv("data/sum2.csv", row.names = FALSE)
+  # add_header_above(c(" " = 4, "Nano-QuIC" = 7, "RT-QuIC" = 7))
+  
+
 
 ## Plot ROC curves -------------------------------------------------------
 
@@ -408,6 +439,7 @@ ggsave("roc_results_by_tissue.png", path = "figures", width = 16, height = 12)
 # width along the unevenly spaced dilution axis. Each tile spans halfway to
 # its neighbours; endpoints fall back to mirroring the one available side.
 df_rect <- expand.grid(
+  species = sort(unique(roc_aucs$species)),
   tissue = sort(unique(roc_aucs$tissue)),
   dilutions = sort(unique(roc_aucs$dilutions))
 ) %>%
@@ -418,36 +450,35 @@ df_rect <- expand.grid(
     dmax = dilutions + w_prev,
     dmin = ifelse(is.na(dmin), dilutions - w_prev, dmin),
     dmax = ifelse(is.na(dmax), dilutions + w_next, dmax),
-    .by = tissue
+    .by = c(species, tissue)
   )
 
 dilution_factors <- round(sort(unique(roc_aucs$dilutions)), 2)
 
 roc_aucs %>%
+  # We only care about the cutoff of 48 hr, so filter to that.
+  filter(cutoff == 48) %>%
   summarize(
     roc_auc = mean(roc_auc),
-    .by = c(dilutions, assay, tissue, cutoff)
+    .by = c(dilutions, assay, tissue, species)
   ) %>%
   left_join(df_rect) %>%
   mutate(
     auc_lab = ifelse(roc_auc >= 0.75, str_remove(as.character(round(roc_auc, 2)), "0"), NA),
+    # auc_lab = round(roc_auc, 2),
     auc_lab_position = (dmin + dmax) / 2
   ) %>%
-  ggplot(aes(dilutions, cutoff, z = roc_auc, fill = roc_auc, group = roc_auc)) +
-  geom_rect(aes(xmin = dmin, xmax = dmax, ymin = cutoff - 2, ymax = cutoff + 2)) +
+  ggplot(aes(dilutions, species, z = roc_auc, fill = roc_auc, group = roc_auc)) +
+  geom_rect(aes(xmin = dmin, xmax = dmax, ymin = as.integer(species) - 0.5, ymax = as.integer(species) + 0.5)) +
   geom_text(aes(label = auc_lab, x = auc_lab_position), color = "white", size = 6) +
-  labs(
-    x = "Log Dilution Factor",
-    y = "Cutoff Time (hr)",
-    fill = "AUC of ROC"
-  ) +
-  facet_grid(tissue ~ assay) +
+  facet_grid(tissue ~ assay, scales = "free") +
   scale_fill_gradient2(
-    low = "red", mid = "lightgreen", high = "navy", midpoint = mean(roc_aucs$roc_auc),
-    breaks = seq(0.4, 1, 0.1), limits = c(0.38, 1.01)
+    low = "red", mid = "lightgreen", high = "navy", midpoint = 0.5,
+    # breaks = seq(0, 1, 0.25), 
+    limits = c(0, 1)
   ) +
   scale_x_continuous(breaks = sort(unique(dilution_factors))) +
-  scale_y_continuous(breaks = seq(24, 48, 4)) +
+  # scale_y_continuous(breaks = seq(24, 48, 4)) +
   {if (for_manuscript) ggtitle("Area Under ROC Curve Heatmap") else .} +
   labs(
     fill = ifelse(for_manuscript, "AUC", "AUC of ROC"),
@@ -455,15 +486,21 @@ roc_aucs %>%
   ) +
   main_theme +
   theme(
+    axis.title.y = element_blank(),
     axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-    legend.position = ifelse(for_manuscript, "right", "top"),
-    legend.title = element_text(margin = margin(r = 20)),
-    legend.key.width =  unit(ifelse(for_manuscript, 0.5, 1), "in"))
+    legend.position = "inside",
+    legend.position.inside = c(0.95, 0.85),
+    legend.background = element_blank(),
+    # legend.position = ifelse(for_manuscript, "right", "top"),
+    legend.title = element_text(margin = margin(r = 20), vjust=2),
+    legend.key.width =  unit(ifelse(for_manuscript, 0.5, 1), "in"),
+    legend.key.height = unit(0.5, "in")
+  )
   
 
 ggsave(
   sprintf("cutoff_vs_dilution%s.png", ifelse(for_manuscript, "_manuscript", "")), 
-  path = "figures", width = 16, height = 16
+  path = "figures", width = 18, height = 12
 )
 
 
@@ -471,25 +508,34 @@ ggsave(
 # RAF Graphs -------------------------------------------------------------
 
 
-make_boxplot <- function(data, y, t) {
+make_boxplot <- function(data, y, t, cutoff = NA_integer_, p_label = "p.value") {
   
-  cutoffs <- roc_aucs %>%
-  filter(tissue == t) %>%
-  summarize(
-    cutoff = cutoff[which.max(roc_auc)][1],
-    .by=c(species, assay, dilutions)
-  ) 
+  if (is.na(cutoff)) {
+    cutoffs <- roc_aucs %>%
+      filter(tissue == t) %>%
+      summarize(
+        cutoff = cutoff[which.max(roc_auc)][1],
+        .by=c(species, assay, dilutions)
+      ) 
+  } 
 
   if (y != "raf") {
     pvals <- data %>%
     filter(tissue == t, dilutions > -5) %>% 
-    inner_join(cutoffs) %>%
+    {if (is.na(cutoff)) inner_join(., cutoffs) else filter(., cutoff == cutoff)} %>%
     summarize(
-      p.value = wilcox.test(!!sym(y) ~ elisa)$p.value,
+      p.value = tryCatch(wilcox.test(!!sym(y) ~ elisa)$p.value, error = function(e) NA_real_),
+      p.signif = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        p.value > 0.05 ~ "ns",
+        TRUE ~ NA_character_
+      ),
       .by = c(species, assay, dilutions)
     ) %>%
     mutate(
-      label = paste("p =", signif(p.value, 2)),
+      label = ifelse(p_label == "p.value", paste("p =", signif(p.value, 2)), p.signif),
       xmin  = ifelse(assay == "Nano-QuIC", 0.875, 1.125),
       xmax  = ifelse(assay == "Nano-QuIC", 1.875, 2.125),
       y     = ifelse(
@@ -506,14 +552,21 @@ make_boxplot <- function(data, y, t) {
 
     pvals2 <- data %>%
     filter(tissue == t, dilutions > -5) %>% 
-    inner_join(cutoffs) %>%
+    {if (is.na(cutoff)) inner_join(., cutoffs) else filter(., cutoff == cutoff)} %>%
     summarize(
       p.value = wilcox.test(!!sym(y) ~ assay)$p.value,
+      p.signif = case_when(
+        p.value < 0.001 ~ "***",
+        p.value < 0.01 ~ "**",
+        p.value < 0.05 ~ "*",
+        p.value > 0.05 ~ "ns",
+        TRUE ~ NA_character_
+      ),
       # elisa = sum(elisa) != 0,
       .by = c(species, elisa, dilutions)
     ) %>%
     mutate(
-      label = paste("p =", signif(p.value, 2)),
+      label = ifelse(p_label == "p.value", paste("p =", signif(p.value, 2)), p.signif),
       y     = ifelse(y == "raf", 1, 10),
       # color = ifelse(p.value < 0.05, "darkred", "black"),
       species = str_remove_all(species, " "),
@@ -526,7 +579,7 @@ make_boxplot <- function(data, y, t) {
 
   data %>%
     mutate(raf = ifelse(crossed, raf, 0)) %>%
-    right_join(cutoffs) %>%
+    {if (is.na(cutoff)) inner_join(., cutoffs) else filter(., cutoff == cutoff)} %>%
     filter(tissue == t, dilutions > -5) %>% 
     mutate(
       pc1 = -pc1,
@@ -580,35 +633,35 @@ make_boxplot <- function(data, y, t) {
 
 ## Brain RAF Boxplot ---------------------------------------------------------
 braf <- df_clean %>%
-make_boxplot("raf", "Brainstem")
+make_boxplot("raf", "Brainstem", cutoff = 48, p_label = "p.signif")
 # ggsave("brain_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 
 ## Lymph RAF Node Boxplot ----------------------------------------------------
-lraf <- make_boxplot(df_clean, "raf", "Lymph Node")
+lraf <- make_boxplot(df_clean, "raf", "Lymph Node", cutoff = 48)
 # ggsave("lymph_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 ## Skin RAF Boxplot ----------------------------------------------------------
 dils <- sort(unique(df_clean$dilutions))
 skraf <- df_clean %>%
   filter(dilutions > -4) %>%
-  make_boxplot("raf", "Skin")
+  make_boxplot("raf", "Skin", cutoff = 48)
 # ggsave("skin_bp.v3.png", path="figures/raf", width = 12, height = 10)
 
 ## Brain PCA Boxplot ---------------------------------------------------------
-bpca <- make_boxplot(df_clean, "pc1", "Brainstem")
+bpca <- make_boxplot(df_clean, "pc1", "Brainstem", cutoff = 48, p_label = "p.signif")
 # ggsave("brain_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 
 ## Lymph PCA Node Boxplot ----------------------------------------------------
-lpca <- make_boxplot(df_clean, "pc1", "Lymph Node")
+lpca <- make_boxplot(df_clean, "pc1", "Lymph Node", cutoff = 48, p_label = "p.signif")
 # ggsave("lymph_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 ## Skin PCA Boxplot ----------------------------------------------------------
 dils <- sort(unique(df_clean$dilutions))
 skpca <- df_clean %>%
   filter(dilutions > -4) %>%
-  make_boxplot("pc1", "Skin")
+  make_boxplot("pc1", "Skin", cutoff = 48, p_label = "p.signif")
 # ggsave("skin_bp_pca.v3.png", path="figures/pca", width = 12, height = 10)
 
 
@@ -623,7 +676,7 @@ ggarrange(lraf, lpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A",
 ggsave("combined_lymph_box.png", path="figures", width=20, height=12)
 
 ggarrange(skraf, skpca, ncol=2, common.legend=TRUE, legend="bottom", labels=c("A", "B"), font.label=list(size=30))
-ggsave("combined_skin_box.png", path="figures", width=20, height=16)
+ggsave("combined_skin_box.png", path="figures", width=20, height=12)
 
 
 # Tables --------------------------------------------------------------------
