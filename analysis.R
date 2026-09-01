@@ -701,3 +701,53 @@ df_min_dil <- df_clean %>%
   filter(dilutions == min(dilutions, na.rm = TRUE), .by = c(animal, species, tissue, assay, elisa)) %>%
   arrange(species, animal, tissue, assay, dilutions)
 write.csv(df_min_dil, "data/min_dil.csv", row.names = FALSE)
+
+
+
+
+
+
+# ROC with only MPR
+
+roc_mpr_rt <- df_clean %>%
+  filter(
+    assay == "RT-QuIC",
+    cutoff == 48,
+    tissue != "Skin",
+    dilutions %in% c(-3)
+  ) %>%
+  roc(elisa, mpr)
+
+roc_mpr_rt_df <- tibble(
+  threshold = roc_mpr_rt$threshold,
+  sensitivity = roc_mpr_rt$sensitivities,
+  specificity = roc_mpr_rt$specificities,
+  auc = roc_mpr_rt$auc
+) %>%
+  mutate(
+    youden = sensitivity + specificity - 1,
+  ) %>%
+  arrange(desc(youden))
+
+roc_mpr_nano <- df_clean %>%
+  filter(
+    assay == "Nano-QuIC",
+    cutoff == 48,
+    tissue != "Skin",
+    dilutions %in% c(-2)
+  ) %>%
+  roc(elisa, mpr)
+
+roc_mpr_nano_df <- tibble(
+  threshold = roc_mpr_nano$threshold,
+  sensitivity = roc_mpr_nano$sensitivities,
+  specificity = roc_mpr_nano$specificities,
+  auc = roc_mpr_nano$auc
+) %>%
+  mutate(
+    youden = sensitivity + specificity - 1,
+  ) %>%
+  arrange(desc(youden))
+
+write.csv(roc_mpr_rt_df, "data/ideal_thresholds_rt.csv")
+write.csv(roc_mpr_nano_df, "data/ideal_thresholds_nano.csv")
