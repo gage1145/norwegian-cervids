@@ -4,6 +4,7 @@ library(ggpubr)
 library(ggrepel)
 library(janitor)
 library(ggnewscale)
+library(latex2exp)
 
 
 # Setup ------------------------------------------------------------------
@@ -54,29 +55,44 @@ df_clean <- read.csv("data/clean_data.csv", check.names = FALSE, row.names = 1) 
 # Metric Correlation -----------------------------------------------------
 
 
-metric_combos <- as.data.frame(t(combn(c("mpr", "ms", "auc"), 2)))
+metric_combos <- as.data.frame(t(combn(c("mpr", "ms", "aufc"), 2)))
 colnames(metric_combos) <- c("x", "y")
 
 make_cor_plot <- function(x, y) {
   df_clean %>%
+    rename(aufc = auc) %>%
     filter(cutoff == 48) %>%
+    mutate(elisa = ifelse(elisa, "Positive", "Negative")) %>%
     ggplot(aes(x = .data[[x]], y = .data[[y]])) +
-    geom_point(color = "purple", alpha = 0.2) +
-    stat_smooth(method = "lm", color = "darkorange") +
-    stat_cor(
-      aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~','~")),
-      label.y.npc = 1, size = 6
-    ) +
+    geom_point(aes(color = elisa), alpha = 0.1) +
+    scale_color_manual(values = elisa_colors) +
+    # stat_smooth(method = "lm", color = "darkorange") +
+    # stat_cor(
+    #   aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~','~")),
+    #   label.y.npc = 1, size = 6
+    # ) +
+    scale_x_log10(n.breaks = 4) +
+    scale_y_log10() +
     labs(
       x = toupper(x),
-      y = toupper(y)
+      y = toupper(y),
+      color = "ELISA"
     ) +
     main_theme
 }
 
 cor_plots <- pmap(metric_combos, make_cor_plot)
-ggarrange(plotlist = cor_plots, ncol = 3, align = "hv")
-ggsave("corplot_separated.png", path = "figures", width = 16, height = 12)
+ggarrange(plotlist = cor_plots, ncol = 3, align = "hv", legend="bottom", common.legend = TRUE, labels = c("A", "B", "C"), 
+  font.label = list(size = 30)
+) %>%
+  annotate_figure(
+    cor_plot,
+    top = text_grob("Metric Correlation", 
+    color = "black", 
+    face = "bold", 
+    size = 30)
+)
+ggsave("corplot_separated.png", plot = cor_plot, path = "figures", width = 16, height = 12)
 
 
 # Principal Component Analysis -------------------------------------------
@@ -340,32 +356,38 @@ df_opt_dil <- df_clean %>%
 cutoff_fig <- function(t) {
   df_opt_dil %>%
     filter(cutoff == 48, tissue == t) %>%
-    mutate(elisa = ifelse(elisa, "Positive", "Negative")) %>%
+    mutate(
+      elisa = ifelse(elisa, "Positive", "Negative"),
+      dilutions = factor(dilutions, levels = c(-3, -2), labels = c(TeX("$10^{-3}$"), TeX("$10^{-2}$")))
+    ) %>%
     ggplot(aes(species, ttt, color = elisa)) +
     geom_point(position = position_jitter(0.2), size = 2, alpha = 0.7) +
     geom_hline(yintercept = 32, linetype = "dashed") +
-    facet_grid(cols = vars(assay), rows = vars(dilutions)) +
+    facet_grid(cols = vars(assay), rows = vars(dilutions), labeller = label_parsed) +
     scale_y_continuous(breaks = seq(0, 48, 6)) +
     scale_color_manual(values = elisa_colors) +
     ggtitle(t) +
     coord_flip() +
     labs(
       title = t,
-      y = "Time to Threshold (h)"
+      y = "Time to Threshold (h)",
+      color = "ELISA"
     ) +
     main_theme +
     theme(
       plot.title = element_text(hjust = 0.5),
-      axis.title.y = element_blank()
+      axis.title.y = element_blank(),
+      legend.position = "bottom"
     )
 }
 
 cutoff_figs <- lapply(unique(df_opt_dil$tissue), cutoff_fig)
 
 ggarrange(
-  plotlist = cutoff_figs, font.label = list(size = 30),
-  nrow = 1, align = "v", legend = "none"
+  plotlist = cutoff_figs, font.label = list(size = 30), legend = "bottom",
+  nrow = 1, align = "v", common.legend = TRUE, labels = c("A", "B")
 )
+
 ggsave("cutoffs.png", path = "figures", width = 16, height = 10)
 
 
